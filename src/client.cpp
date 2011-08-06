@@ -564,6 +564,29 @@ void Client::step(float dtime)
 					m_client_event_queue.push_back(event);
 				}
 			}
+			else if(event.type == CEE_DYNLIGHT_CHANGE)
+			{
+				v3s16 oldp, newp;
+				oldp.X = event.player_position.prev_X;
+				oldp.Y = event.player_position.prev_Y;
+				oldp.Z = event.player_position.prev_Z;
+				newp.X = event.player_position.curr_X;
+				newp.Y = event.player_position.curr_Y;
+				newp.Z = event.player_position.curr_Z;
+
+				Map *map = &m_env.getMap();
+				try {
+					MapNode n = map->getNode(oldp);
+					n.setExtraLight(0);
+					addNode(oldp, n);
+				} catch (InvalidPositionException &e) {};
+
+				try {
+					MapNode n = map->getNode(newp);
+					n.setExtraLight(LIGHT_MAX-1);
+					addNode(newp, n);
+				} catch (InvalidPositionException &e) {};
+			}
 		}
 	}
 	

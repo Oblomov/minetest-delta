@@ -316,7 +316,8 @@ public:
 enum ClientEnvEventType
 {
 	CEE_NONE,
-	CEE_PLAYER_DAMAGE
+	CEE_PLAYER_DAMAGE,
+	CEE_DYNLIGHT_CHANGE
 };
 
 struct ClientEnvEvent
@@ -328,6 +329,14 @@ struct ClientEnvEvent
 		struct{
 			u8 amount;
 		} player_damage;
+		struct{
+			s16 prev_X;
+			s16 prev_Y;
+			s16 prev_Z;
+			s16 curr_X;
+			s16 curr_Y;
+			s16 curr_Z;
+		} player_position;
 	};
 };
 
