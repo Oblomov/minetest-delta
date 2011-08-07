@@ -30,7 +30,7 @@ core::map<u16, ServerActiveObject::Factory> ServerActiveObject::m_types;
 // Prototype
 TestSAO proto_TestSAO(NULL, 0, v3f(0,0,0));
 
-TestSAO::TestSAO(ServerEnvironment *env, u16 id, v3f pos):
+TestSAO::TestSAO(ServerEnvironment *env, u16 id, const v3f &pos):
 	ServerActiveObject(env, id, pos),
 	m_timer1(0),
 	m_age(0)
@@ -38,8 +38,8 @@ TestSAO::TestSAO(ServerEnvironment *env, u16 id, v3f pos):
 	ServerActiveObject::registerType(getType(), create);
 }
 
-ServerActiveObject* TestSAO::create(ServerEnvironment *env, u16 id, v3f pos,
-		const std::string &data)
+ServerActiveObject* TestSAO::create(ServerEnvironment *env, u16 id,
+		const v3f &pos, const std::string &data)
 {
 	return new TestSAO(env, id, pos);
 }
@@ -89,8 +89,8 @@ void TestSAO::step(float dtime, bool send_recommended)
 // Prototype
 ItemSAO proto_ItemSAO(NULL, 0, v3f(0,0,0), "");
 
-ItemSAO::ItemSAO(ServerEnvironment *env, u16 id, v3f pos,
-		const std::string inventorystring):
+ItemSAO::ItemSAO(ServerEnvironment *env, u16 id,
+		const v3f &pos, const std::string &inventorystring):
 	ServerActiveObject(env, id, pos),
 	m_inventorystring(inventorystring),
 	m_speed_f(0,0,0),
@@ -99,8 +99,8 @@ ItemSAO::ItemSAO(ServerEnvironment *env, u16 id, v3f pos,
 	ServerActiveObject::registerType(getType(), create);
 }
 
-ServerActiveObject* ItemSAO::create(ServerEnvironment *env, u16 id, v3f pos,
-		const std::string &data)
+ServerActiveObject* ItemSAO::create(ServerEnvironment *env, u16 id,
+		const v3f &pos, const std::string &data)
 {
 	std::istringstream is(data, std::ios::binary);
 	char buf[1];
@@ -235,7 +235,7 @@ void ItemSAO::rightClick(Player *player)
 // Prototype
 RatSAO proto_RatSAO(NULL, 0, v3f(0,0,0));
 
-RatSAO::RatSAO(ServerEnvironment *env, u16 id, v3f pos):
+RatSAO::RatSAO(ServerEnvironment *env, u16 id, const v3f &pos):
 	ServerActiveObject(env, id, pos),
 	m_is_active(false),
 	m_speed_f(0,0,0)
@@ -251,8 +251,8 @@ RatSAO::RatSAO(ServerEnvironment *env, u16 id, v3f pos):
 	m_touching_ground = false;
 }
 
-ServerActiveObject* RatSAO::create(ServerEnvironment *env, u16 id, v3f pos,
-		const std::string &data)
+ServerActiveObject* RatSAO::create(ServerEnvironment *env, u16 id,
+		const v3f &pos, const std::string &data)
 {
 	std::istringstream is(data, std::ios::binary);
 	char buf[1];
@@ -437,7 +437,7 @@ void accelerate_xz(v3f &speed, v3f target_speed, f32 max_increase)
 // Prototype
 Oerkki1SAO proto_Oerkki1SAO(NULL, 0, v3f(0,0,0));
 
-Oerkki1SAO::Oerkki1SAO(ServerEnvironment *env, u16 id, v3f pos):
+Oerkki1SAO::Oerkki1SAO(ServerEnvironment *env, u16 id, const v3f &pos):
 	ServerActiveObject(env, id, pos),
 	m_is_active(false),
 	m_speed_f(0,0,0)
@@ -455,8 +455,8 @@ Oerkki1SAO::Oerkki1SAO(ServerEnvironment *env, u16 id, v3f pos):
 	m_after_jump_timer = 0;
 }
 
-ServerActiveObject* Oerkki1SAO::create(ServerEnvironment *env, u16 id, v3f pos,
-		const std::string &data)
+ServerActiveObject* Oerkki1SAO::create(ServerEnvironment *env, u16 id,
+		const v3f &pos, const std::string &data)
 {
 	std::istringstream is(data, std::ios::binary);
 	// read version
@@ -669,7 +669,7 @@ std::string Oerkki1SAO::getStaticData()
 	return os.str();
 }
 
-u16 Oerkki1SAO::punch(const std::string &toolname, v3f dir)
+u16 Oerkki1SAO::punch(const std::string &toolname, const v3f &dir)
 {
 	m_speed_f += dir*12*BS;
 
@@ -712,7 +712,7 @@ void Oerkki1SAO::doDamage(u16 d)
 // Prototype
 FireflySAO proto_FireflySAO(NULL, 0, v3f(0,0,0));
 
-FireflySAO::FireflySAO(ServerEnvironment *env, u16 id, v3f pos):
+FireflySAO::FireflySAO(ServerEnvironment *env, u16 id, const v3f &pos):
 	ServerActiveObject(env, id, pos),
 	m_is_active(false),
 	m_speed_f(0,0,0)
@@ -728,8 +728,8 @@ FireflySAO::FireflySAO(ServerEnvironment *env, u16 id, v3f pos):
 	m_touching_ground = false;
 }
 
-ServerActiveObject* FireflySAO::create(ServerEnvironment *env, u16 id, v3f pos,
-		const std::string &data)
+ServerActiveObject* FireflySAO::create(ServerEnvironment *env, u16 id,
+		const v3f &pos, const std::string &data)
 {
 	std::istringstream is(data, std::ios::binary);
 	char buf[1];
