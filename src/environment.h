@@ -64,7 +64,7 @@ public:
 	Player * getPlayer(u16 peer_id);
 	Player * getPlayer(const char *name);
 	Player * getRandomConnectedPlayer();
-	Player * getNearestConnectedPlayer(v3f pos);
+	Player * getNearestConnectedPlayer(const v3f &pos);
 	core::list<Player*> getPlayers();
 	core::list<Player*> getPlayers(bool ignore_disconnected);
 	void printPlayers(std::ostream &o);
@@ -104,7 +104,7 @@ public:
 			core::map<v3s16, bool> &blocks_removed,
 			core::map<v3s16, bool> &blocks_added);
 
-	bool contains(v3s16 p){
+	bool contains(const v3s16 &p){
 		return (m_list.find(p) != NULL);
 	}
 
@@ -179,7 +179,7 @@ public:
 		Find out what new objects have been added to
 		inside a radius around a position
 	*/
-	void getAddedActiveObjects(v3s16 pos, s16 radius,
+	void getAddedActiveObjects(const v3s16 &pos, s16 radius,
 			core::map<u16, bool> &current_objects,
 			core::map<u16, bool> &added_objects);
 
@@ -187,7 +187,7 @@ public:
 		Find out what new objects have been removed from
 		inside a radius around a position
 	*/
-	void getRemovedActiveObjects(v3s16 pos, s16 radius,
+	void getRemovedActiveObjects(const v3s16 &pos, s16 radius,
 			core::map<u16, bool> &current_objects,
 			core::map<u16, bool> &removed_objects);
 	
@@ -298,7 +298,7 @@ public:
 	// chance of (1 / return value), 0 is disallowed
 	virtual u32 getActiveChance() = 0;
 	// This is called usually at interval for 1/chance of the nodes
-	virtual void triggerEvent(ServerEnvironment *env, v3s16 p) = 0;
+	virtual void triggerEvent(ServerEnvironment *env, const v3s16 &p) = 0;
 };
 
 #ifndef SERVER
@@ -352,7 +352,7 @@ public:
 	virtual void addPlayer(Player *player);
 	LocalPlayer * getLocalPlayer();
 
-	void updateMeshes(v3s16 blockpos);
+	void updateMeshes(const v3s16 &blockpos);
 	void expireMeshes(bool only_daynight_diffed);
 
 	void setTimeOfDay(u32 time)
@@ -401,14 +401,14 @@ public:
 	*/
 	
 	// Get all nearby objects
-	void getActiveObjects(v3f origin, f32 max_d,
+	void getActiveObjects(const v3f &origin, f32 max_d,
 			core::array<DistanceSortedActiveObject> &dest);
 	
 	// Get event from queue. CEE_NONE is returned if queue is empty.
 	ClientEnvEvent getClientEvent();
 
 	// Post effects
-	void drawPostFx(video::IVideoDriver* driver, v3f camera_pos);
+	void drawPostFx(video::IVideoDriver* driver, const v3f &camera_pos);
 	
 private:
 	ClientMap *m_map;

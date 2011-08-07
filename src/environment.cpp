@@ -120,7 +120,7 @@ Player * Environment::getRandomConnectedPlayer()
 	return NULL;
 }
 
-Player * Environment::getNearestConnectedPlayer(v3f pos)
+Player * Environment::getNearestConnectedPlayer(const v3f &pos)
 {
 	core::list<Player*> connected_players = getPlayers(true);
 	f32 nearest_d = 0;
@@ -192,7 +192,7 @@ u32 Environment::getDayNightRatio()
 	ActiveBlockList
 */
 
-void fillRadiusBlock(v3s16 p0, s16 r, core::map<v3s16, bool> &list)
+void fillRadiusBlock(const v3s16 &p0, s16 r, core::map<v3s16, bool> &list)
 {
 	v3s16 p;
 	for(p.X=p0.X-r; p.X<=p0.X+r; p.X++)
@@ -1072,7 +1072,7 @@ u16 ServerEnvironment::addActiveObject(ServerActiveObject *object)
 	Finds out what new objects have been added to
 	inside a radius around a position
 */
-void ServerEnvironment::getAddedActiveObjects(v3s16 pos, s16 radius,
+void ServerEnvironment::getAddedActiveObjects(const v3s16 &pos, s16 radius,
 		core::map<u16, bool> &current_objects,
 		core::map<u16, bool> &added_objects)
 {
@@ -1115,7 +1115,7 @@ void ServerEnvironment::getAddedActiveObjects(v3s16 pos, s16 radius,
 	Finds out what objects have been removed from
 	inside a radius around a position
 */
-void ServerEnvironment::getRemovedActiveObjects(v3s16 pos, s16 radius,
+void ServerEnvironment::getRemovedActiveObjects(const v3s16 &pos, s16 radius,
 		core::map<u16, bool> &current_objects,
 		core::map<u16, bool> &removed_objects)
 {
@@ -1719,7 +1719,7 @@ void ClientEnvironment::step(float dtime)
 	}
 }
 
-void ClientEnvironment::updateMeshes(v3s16 blockpos)
+void ClientEnvironment::updateMeshes(const v3s16 &blockpos)
 {
 	m_map->updateMeshes(blockpos, getDayNightRatio());
 }
@@ -1872,7 +1872,7 @@ void ClientEnvironment::damageLocalPlayer(u8 damage)
 	Client likes to call these
 */
 	
-void ClientEnvironment::getActiveObjects(v3f origin, f32 max_d,
+void ClientEnvironment::getActiveObjects(const v3f &origin, f32 max_d,
 		core::array<DistanceSortedActiveObject> &dest)
 {
 	for(core::map<u16, ClientActiveObject*>::Iterator
@@ -1903,7 +1903,7 @@ ClientEnvEvent ClientEnvironment::getClientEvent()
 	return m_client_event_queue.pop_front();
 }
 
-void ClientEnvironment::drawPostFx(video::IVideoDriver* driver, v3f camera_pos)
+void ClientEnvironment::drawPostFx(video::IVideoDriver* driver, const v3f &camera_pos)
 {
 	/*LocalPlayer *player = getLocalPlayer();
 	assert(player);
