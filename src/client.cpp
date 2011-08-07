@@ -574,18 +574,7 @@ void Client::step(float dtime)
 				newp.Y = event.player_position.curr_Y;
 				newp.Z = event.player_position.curr_Z;
 
-				Map *map = &m_env.getMap();
-				try {
-					MapNode n = map->getNode(oldp);
-					n.setExtraLight(0);
-					addNode(oldp, n);
-				} catch (InvalidPositionException &e) {};
-
-				try {
-					MapNode n = map->getNode(newp);
-					n.setExtraLight(LIGHT_MAX-1);
-					addNode(newp, n);
-				} catch (InvalidPositionException &e) {};
+				moveDynLight(oldp, newp);
 			}
 		}
 	}
@@ -2002,7 +1991,37 @@ void Client::addNode(v3s16 p, MapNode n)
 		addUpdateMeshTaskWithEdge(p);
 	}
 }
-	
+
+void Client::moveDynLight(const v3s16 &oldp, const v3s16 &newp)
+{
+	TimeTaker timer1("Client::moveDynLight()");
+
+	Map *map = &m_env.getMap();
+	core::map<v3s16, MapBlock*> modified_blocks;
+
+	try {
+		MapNode n = map->getNode(oldp);
+		n.setExtraLight(0);
+		map->addNodeAndUpdate(oldp, n, modified_blocks);
+	} catch (InvalidPositionException &e)
+	{};
+
+	try {
+		MapNode n = map->getNode(newp);
+		n.setExtraLight(LIGHT_MAX-1);
+		map->addNodeAndUpdate(newp, n, modified_blocks);
+	} catch (InvalidPositionException &e)
+	{};
+
+	for(core::map<v3s16, MapBlock * >::Iterator
+			i = modified_blocks.getIterator();
+			i.atEnd() == false; i++)
+	{
+		v3s16 p = i.getNode()->getKey();
+		addUpdateMeshTaskWithEdge(p);
+	}
+}
+
 void Client::updateCamera(v3f pos, v3f dir)
 {
 	m_env.getClientMap().updateCamera(pos, dir);

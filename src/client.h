@@ -198,7 +198,9 @@ public:
 	void removeNode(v3s16 p);
 	// locks envlock
 	void addNode(v3s16 p, MapNode n);
-	
+
+	void moveDynLight(const v3s16 &oldp, const v3s16 &newp);
+
 	void updateCamera(v3f pos, v3f dir);
 	
 	// Returns InvalidPositionException if not found
