@@ -46,14 +46,14 @@ struct SmoothTranslator
 		vect_aim(0,0,0)
 	{}
 
-	void init(v3f vect)
+	void init(const v3f &vect)
 	{
 		vect_old = vect;
 		vect_show = vect;
 		vect_aim = vect;
 	}
 
-	void update(v3f vect_new)
+	void update(const v3f &vect_new)
 	{
 		vect_old = vect_show;
 		vect_aim = vect_new;
