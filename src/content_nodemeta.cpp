@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // Prototype
 SignNodeMetadata proto_SignNodeMetadata("");
 
-SignNodeMetadata::SignNodeMetadata(std::string text):
+SignNodeMetadata::SignNodeMetadata(const std::string &text):
 	m_text(text)
 {
 	NodeMetadata::registerType(typeId(), create);

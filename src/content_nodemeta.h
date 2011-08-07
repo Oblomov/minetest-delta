@@ -27,7 +27,7 @@ class Inventory;
 class SignNodeMetadata : public NodeMetadata
 {
 public:
-	SignNodeMetadata(std::string text);
+	SignNodeMetadata(const std::string &text);
 	//~SignNodeMetadata();
 	
 	virtual u16 typeId() const;
@@ -36,8 +36,8 @@ public:
 	virtual void serializeBody(std::ostream &os);
 	virtual std::string infoText();
 
-	std::string getText(){ return m_text; }
-	void setText(std::string t){ m_text = t; }
+	const std::string &getText(){ return m_text; }
+	void setText(const std::string &t){ m_text = t; }
 
 private:
 	std::string m_text;
