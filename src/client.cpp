@@ -70,7 +70,7 @@ MeshUpdateQueue::~MeshUpdateQueue()
 /*
 	peer_id=0 adds with nobody to send to
 */
-void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_server)
+void MeshUpdateQueue::addBlock(const v3s16 &p, MeshMakeData *data, bool ack_block_to_server)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -239,7 +239,7 @@ Client::~Client()
 		sleep_ms(100);
 }
 
-void Client::connect(Address address)
+void Client::connect(const Address &address)
 {
 	DSTACK(__FUNCTION_NAME);
 	//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
@@ -760,7 +760,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		v3s16 playerpos_s16(0, BS*2+BS*20, 0);
 		if(datasize >= 2+1+6)
 			playerpos_s16 = readV3S16(&data[2+1]);
-		v3f playerpos_f = intToFloat(playerpos_s16, BS) - v3f(0, BS/2, 0);
+		const v3f &playerpos_f = intToFloat(playerpos_s16, BS) - v3f(0, BS/2, 0);
 
 		{ //envlock
 			//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
@@ -1562,8 +1562,8 @@ void Client::Send(u16 channelnum, SharedBuffer<u8> data, bool reliable)
 	m_con.Send(PEER_ID_SERVER, channelnum, data, reliable);
 }
 
-void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
-		v3s16 nodepos_oversurface, u16 item)
+void Client::groundAction(u8 action, const v3s16 &nodepos_undersurface,
+		const v3s16 &nodepos_oversurface, u16 item)
 {
 	if(connectedAndInitialized() == false){
 		dout_client<<DTIME<<"Client::groundAction() "
@@ -1595,7 +1595,7 @@ void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
 	Send(0, data, true);
 }
 
-void Client::clickObject(u8 button, v3s16 blockpos, s16 id, u16 item)
+void Client::clickObject(u8 button, const v3s16 &blockpos, s16 id, u16 item)
 {
 	if(connectedAndInitialized() == false){
 		dout_client<<DTIME<<"Client::clickObject() "
@@ -1646,7 +1646,7 @@ void Client::clickActiveObject(u8 button, u16 id, u16 item)
 	Send(0, data, true);
 }
 
-void Client::sendSignText(v3s16 blockpos, s16 id, std::string text)
+void Client::sendSignText(const v3s16 &blockpos, s16 id, std::string text)
 {
 	/*
 		u16 command
@@ -1685,7 +1685,7 @@ void Client::sendSignText(v3s16 blockpos, s16 id, std::string text)
 	Send(0, data, true);
 }
 	
-void Client::sendSignNodeText(v3s16 p, std::string text)
+void Client::sendSignNodeText(const v3s16 &p, std::string text)
 {
 	/*
 		u16 command
@@ -1765,8 +1765,8 @@ void Client::sendChatMessage(const std::wstring &message)
 	Send(0, data, true);
 }
 
-void Client::sendChangePassword(const std::wstring oldpassword,
-		const std::wstring newpassword)
+void Client::sendChangePassword(const std::wstring &oldpassword,
+		const std::wstring &newpassword)
 {
 	Player *player = m_env.getLocalPlayer();
 	if(player == NULL)
@@ -1864,7 +1864,7 @@ void Client::sendPlayerPos()
 	Send(0, data, false);
 }
 
-void Client::removeNode(v3s16 p)
+void Client::removeNode(const v3s16 &p)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	
@@ -1889,7 +1889,7 @@ void Client::removeNode(v3s16 p)
 	}
 }
 
-void Client::addNode(v3s16 p, MapNode n)
+void Client::addNode(const v3s16 &p, const MapNode &n)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 
@@ -1917,20 +1917,20 @@ void Client::addNode(v3s16 p, MapNode n)
 	}
 }
 	
-void Client::updateCamera(v3f pos, v3f dir)
+void Client::updateCamera(const v3f &pos, const v3f &dir)
 {
 	m_env.getClientMap().updateCamera(pos, dir);
 	camera_position = pos;
 	camera_direction = dir;
 }
 
-MapNode Client::getNode(v3s16 p)
+MapNode Client::getNode(const v3s16 &p)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	return m_env.getMap().getNode(p);
 }
 
-NodeMetadata* Client::getNodeMetadata(v3s16 p)
+NodeMetadata* Client::getNodeMetadata(const v3s16 &p)
 {
 	return m_env.getMap().getNodeMetadata(p);
 }
@@ -1943,7 +1943,7 @@ v3f Client::getPlayerPosition()
 	return player->getPosition();
 }
 
-void Client::setPlayerControl(PlayerControl &control)
+void Client::setPlayerControl(const PlayerControl &control)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	LocalPlayer *player = m_env.getLocalPlayer();
@@ -1976,7 +1976,7 @@ InventoryContext *Client::getInventoryContext()
 	return &m_inventory_context;
 }
 
-Inventory* Client::getInventory(InventoryContext *c, std::string id)
+Inventory* Client::getInventory(InventoryContext *c, const std::string &id)
 {
 	if(id == "current_player")
 	{
@@ -2011,8 +2011,8 @@ void Client::inventoryAction(InventoryAction *a)
 
 MapBlockObject * Client::getSelectedObject(
 		f32 max_d,
-		v3f from_pos_f_on_map,
-		core::line3d<f32> shootline_on_map
+		const v3f &from_pos_f_on_map,
+		const core::line3d<f32> &shootline_on_map
 	)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
@@ -2076,8 +2076,8 @@ MapBlockObject * Client::getSelectedObject(
 
 ClientActiveObject * Client::getSelectedActiveObject(
 		f32 max_d,
-		v3f from_pos_f_on_map,
-		core::line3d<f32> shootline_on_map
+		const v3f &from_pos_f_on_map,
+		const core::line3d<f32> &shootline_on_map
 	)
 {
 	core::array<DistanceSortedActiveObject> objects;
@@ -2140,7 +2140,7 @@ u16 Client::getHP()
 	return player->hp;
 }
 
-void Client::setTempMod(v3s16 p, NodeMod mod)
+void Client::setTempMod(const v3s16 &p, const NodeMod &mod)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
@@ -2157,7 +2157,7 @@ void Client::setTempMod(v3s16 p, NodeMod mod)
 	}
 }
 
-void Client::clearTempMod(v3s16 p)
+void Client::clearTempMod(const v3s16 &p)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
@@ -2174,7 +2174,7 @@ void Client::clearTempMod(v3s16 p)
 	}
 }
 
-void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
+void Client::addUpdateMeshTask(const v3s16 &p, bool ack_to_server)
 {
 	/*dstream<<"Client::addUpdateMeshTask(): "
 			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
@@ -2226,7 +2226,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 	b->setMeshExpired(false);
 }
 
-void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server)
+void Client::addUpdateMeshTaskWithEdge(const v3s16 &blockpos, bool ack_to_server)
 {
 	/*{
 		v3s16 p = blockpos;

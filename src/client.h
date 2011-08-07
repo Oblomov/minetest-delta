@@ -63,7 +63,7 @@ public:
 	/*
 		peer_id=0 adds with nobody to send to
 	*/
-	void addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_server);
+	void addBlock(const v3s16 &p, MeshMakeData *data, bool ack_block_to_server);
 
 	// Returned pointer must be deleted
 	// Returns NULL if queue is empty
@@ -151,7 +151,7 @@ public:
 		The name of the local player should already be set when
 		calling this, as it is sent in the initialization.
 	*/
-	void connect(Address address);
+	void connect(const Address &address);
 	/*
 		returns true when
 			m_con.Connected() == true
@@ -181,34 +181,34 @@ public:
 	// Pops out a packet from the packet queue
 	//IncomingPacket getPacket();
 
-	void groundAction(u8 action, v3s16 nodepos_undersurface,
-			v3s16 nodepos_oversurface, u16 item);
-	void clickObject(u8 button, v3s16 blockpos, s16 id, u16 item);
+	void groundAction(u8 action, const v3s16 &nodepos_undersurface,
+			const v3s16 &nodepos_oversurface, u16 item);
+	void clickObject(u8 button, const v3s16 &blockpos, s16 id, u16 item);
 	void clickActiveObject(u8 button, u16 id, u16 item);
 
-	void sendSignText(v3s16 blockpos, s16 id, std::string text);
-	void sendSignNodeText(v3s16 p, std::string text);
+	void sendSignText(const v3s16 &blockpos, s16 id, std::string text);
+	void sendSignNodeText(const v3s16 &p, std::string text);
 	void sendInventoryAction(InventoryAction *a);
 	void sendChatMessage(const std::wstring &message);
-	void sendChangePassword(const std::wstring oldpassword,
-		const std::wstring newpassword);
+	void sendChangePassword(const std::wstring &oldpassword,
+		const std::wstring &newpassword);
 	void sendDamage(u8 damage);
 	
 	// locks envlock
-	void removeNode(v3s16 p);
+	void removeNode(const v3s16 &p);
 	// locks envlock
-	void addNode(v3s16 p, MapNode n);
+	void addNode(const v3s16 &p, const MapNode &n);
 	
-	void updateCamera(v3f pos, v3f dir);
+	void updateCamera(const v3f &pos, const v3f &dir);
 	
 	// Returns InvalidPositionException if not found
-	MapNode getNode(v3s16 p);
+	MapNode getNode(const v3s16 &p);
 	// Wrapper to Map
-	NodeMetadata* getNodeMetadata(v3s16 p);
+	NodeMetadata* getNodeMetadata(const v3s16 &p);
 
 	v3f getPlayerPosition();
 
-	void setPlayerControl(PlayerControl &control);
+	void setPlayerControl(const PlayerControl &control);
 	
 	// Returns true if the inventory of the local player has been
 	// updated from the server. If it is true, it is set to false.
@@ -218,23 +218,23 @@ public:
 	
 	InventoryContext *getInventoryContext();
 
-	Inventory* getInventory(InventoryContext *c, std::string id);
+	Inventory* getInventory(InventoryContext *c, const std::string &id);
 	void inventoryAction(InventoryAction *a);
 
 	// Gets closest object pointed by the shootline
 	// Returns NULL if not found
 	MapBlockObject * getSelectedObject(
 			f32 max_d,
-			v3f from_pos_f_on_map,
-			core::line3d<f32> shootline_on_map
+			const v3f &from_pos_f_on_map,
+			const core::line3d<f32> &shootline_on_map
 	);
 
 	// Gets closest object pointed by the shootline
 	// Returns NULL if not found
 	ClientActiveObject * getSelectedActiveObject(
 			f32 max_d,
-			v3f from_pos_f_on_map,
-			core::line3d<f32> shootline_on_map
+			const v3f &from_pos_f_on_map,
+			const core::line3d<f32> &shootline_on_map
 	);
 
 	// Prints a line or two of info
@@ -244,8 +244,8 @@ public:
 
 	u16 getHP();
 
-	void setTempMod(v3s16 p, NodeMod mod);
-	void clearTempMod(v3s16 p);
+	void setTempMod(const v3s16 &p, const NodeMod &mod);
+	void clearTempMod(const v3s16 &p);
 
 	float getAvgRtt()
 	{
@@ -276,9 +276,9 @@ public:
 
 	u64 getMapSeed(){ return m_map_seed; }
 
-	void addUpdateMeshTask(v3s16 blockpos, bool ack_to_server=false);
+	void addUpdateMeshTask(const v3s16 &blockpos, bool ack_to_server=false);
 	// Including blocks at appropriate edges
-	void addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server=false);
+	void addUpdateMeshTaskWithEdge(const v3s16 &blockpos, bool ack_to_server=false);
 
 	// Get event from queue. CE_NONE is returned if queue is empty.
 	ClientEvent getClientEvent();
