@@ -117,7 +117,7 @@ inline s16 readS16(u8 *data){
 	return (s16)readU16(data);
 }
 
-inline void writeV3S32(u8 *data, v3s32 p)
+inline void writeV3S32(u8 *data, const v3s32 &p)
 {
 	writeS32(&data[0], p.X);
 	writeS32(&data[4], p.Y);
@@ -132,7 +132,7 @@ inline v3s32 readV3S32(u8 *data)
 	return p;
 }
 
-inline void writeV3F1000(u8 *data, v3f p)
+inline void writeV3F1000(u8 *data, const v3f &p)
 {
 	writeF1000(&data[0], p.X);
 	writeF1000(&data[4], p.Y);
@@ -147,7 +147,7 @@ inline v3f readV3F1000(u8 *data)
 	return p;
 }
 
-inline void writeV2S16(u8 *data, v2s16 p)
+inline void writeV2S16(u8 *data, const v2s16 &p)
 {
 	writeS16(&data[0], p.X);
 	writeS16(&data[2], p.Y);
@@ -161,7 +161,7 @@ inline v2s16 readV2S16(u8 *data)
 	return p;
 }
 
-inline void writeV2S32(u8 *data, v2s32 p)
+inline void writeV2S32(u8 *data, const v2s32 &p)
 {
 	writeS32(&data[0], p.X);
 	writeS32(&data[2], p.Y);
@@ -175,7 +175,7 @@ inline v2s32 readV2S32(u8 *data)
 	return p;
 }
 
-inline void writeV3S16(u8 *data, v3s16 p)
+inline void writeV3S16(u8 *data, const v3s16 &p)
 {
 	writeS16(&data[0], p.X);
 	writeS16(&data[2], p.Y);
@@ -250,7 +250,7 @@ inline f32 readF1000(std::istream &is)
 	return readF1000((u8*)buf);
 }
 
-inline void writeV3F1000(std::ostream &os, v3f p)
+inline void writeV3F1000(std::ostream &os, const v3f &p)
 {
 	char buf[12];
 	writeV3F1000((u8*)buf, p);
@@ -659,7 +659,7 @@ inline s16 getContainerPos(s16 p, s16 d)
 	return (p>=0 ? p : p-d+1) / d;
 }
 
-inline v2s16 getContainerPos(v2s16 p, s16 d)
+inline v2s16 getContainerPos(const v2s16 &p, s16 d)
 {
 	return v2s16(
 		getContainerPos(p.X, d),
@@ -667,7 +667,7 @@ inline v2s16 getContainerPos(v2s16 p, s16 d)
 	);
 }
 
-inline v3s16 getContainerPos(v3s16 p, s16 d)
+inline v3s16 getContainerPos(const v3s16 &p, s16 d)
 {
 	return v3s16(
 		getContainerPos(p.X, d),
@@ -676,7 +676,7 @@ inline v3s16 getContainerPos(v3s16 p, s16 d)
 	);
 }
 
-inline v2s16 getContainerPos(v2s16 p, v2s16 d)
+inline v2s16 getContainerPos(const v2s16 &p, const v2s16 &d)
 {
 	return v2s16(
 		getContainerPos(p.X, d.X),
@@ -684,7 +684,7 @@ inline v2s16 getContainerPos(v2s16 p, v2s16 d)
 	);
 }
 
-inline v3s16 getContainerPos(v3s16 p, v3s16 d)
+inline v3s16 getContainerPos(const v3s16 &p, const v3s16 &d)
 {
 	return v3s16(
 		getContainerPos(p.X, d.X),
@@ -693,7 +693,7 @@ inline v3s16 getContainerPos(v3s16 p, v3s16 d)
 	);
 }
 
-inline bool isInArea(v3s16 p, s16 d)
+inline bool isInArea(const v3s16 &p, s16 d)
 {
 	return (
 		p.X >= 0 && p.X < d &&
@@ -702,7 +702,7 @@ inline bool isInArea(v3s16 p, s16 d)
 	);
 }
 
-inline bool isInArea(v2s16 p, s16 d)
+inline bool isInArea(const v2s16 &p, s16 d)
 {
 	return (
 		p.X >= 0 && p.X < d &&
@@ -710,7 +710,7 @@ inline bool isInArea(v2s16 p, s16 d)
 	);
 }
 
-inline bool isInArea(v3s16 p, v3s16 d)
+inline bool isInArea(const v3s16 &p, const v3s16 &d)
 {
 	return (
 		p.X >= 0 && p.X < d.X &&
@@ -842,17 +842,17 @@ inline s32 stoi(const std::string &s, s32 min, s32 max)
 // MSVC2010 includes it's own versions of these
 #if !defined(_MSC_VER) || _MSC_VER < 1600
 
-inline s32 stoi(std::string s)
+inline s32 stoi(const std::string &s)
 {
 	return atoi(s.c_str());
 }
 
-inline s32 stoi(std::wstring s)
+inline s32 stoi(const std::wstring &s)
 {
 	return atoi(wide_to_narrow(s).c_str());
 }
 
-inline float stof(std::string s)
+inline float stof(const std::string &s)
 {
 	float f;
 	std::istringstream ss(s);
@@ -1257,28 +1257,28 @@ public:
 		return true;
 	}
 
-	void set(std::string name, std::string value)
+	void set(const std::string &name, const std::string &value)
 	{
 		JMutexAutoLock lock(m_mutex);
 		
 		m_settings[name] = value;
 	}
 
-	void setDefault(std::string name, std::string value)
+	void setDefault(const std::string &name, const std::string &value)
 	{
 		JMutexAutoLock lock(m_mutex);
 		
 		m_defaults[name] = value;
 	}
 
-	bool exists(std::string name)
+	bool exists(const std::string &name)
 	{
 		JMutexAutoLock lock(m_mutex);
 		
 		return (m_settings.find(name) || m_defaults.find(name));
 	}
 
-	std::string get(std::string name)
+	std::string get(const std::string &name)
 	{
 		JMutexAutoLock lock(m_mutex);
 		
@@ -1298,12 +1298,12 @@ public:
 		return n->getValue();
 	}
 
-	bool getBool(std::string name)
+	bool getBool(const std::string &name)
 	{
 		return is_yes(get(name));
 	}
 	
-	bool getFlag(std::string name)
+	bool getFlag(const std::string &name)
 	{
 		try
 		{
@@ -1316,7 +1316,8 @@ public:
 	}
 
 	// Asks if empty
-	bool getBoolAsk(std::string name, std::string question, bool def)
+	bool getBoolAsk(const std::string &name,
+			const std::string &question, bool def)
 	{
 		// If it is in settings
 		if(exists(name))
@@ -1334,17 +1335,18 @@ public:
 		return is_yes(s);
 	}
 
-	float getFloat(std::string name)
+	float getFloat(const std::string &name)
 	{
 		return stof(get(name));
 	}
 
-	u16 getU16(std::string name)
+	u16 getU16(const std::string &name)
 	{
 		return stoi(get(name), 0, 65535);
 	}
 
-	u16 getU16Ask(std::string name, std::string question, u16 def)
+	u16 getU16Ask(const std::string &name,
+		      const std::string &question, u16 def)
 	{
 		// If it is in settings
 		if(exists(name))
@@ -1362,17 +1364,17 @@ public:
 		return stoi(s, 0, 65535);
 	}
 
-	s16 getS16(std::string name)
+	s16 getS16(const std::string &name)
 	{
 		return stoi(get(name), -32768, 32767);
 	}
 
-	s32 getS32(std::string name)
+	s32 getS32(const std::string &name)
 	{
 		return stoi(get(name));
 	}
 
-	v3f getV3F(std::string name)
+	v3f getV3F(const std::string &name)
 	{
 		v3f value;
 		Strfnd f(get(name));
@@ -1383,7 +1385,7 @@ public:
 		return value;
 	}
 
-	u64 getU64(std::string name)
+	u64 getU64(const std::string &name)
 	{
 		u64 value = 0;
 		std::string s = get(name);
@@ -1392,7 +1394,7 @@ public:
 		return value;
 	}
 
-	void setBool(std::string name, bool value)
+	void setBool(const std::string &name, bool value)
 	{
 		if(value)
 			set(name, "true");
@@ -1400,24 +1402,24 @@ public:
 			set(name, "false");
 	}
 
-	void setS32(std::string name, s32 value)
+	void setS32(const std::string &name, s32 value)
 	{
 		set(name, itos(value));
 	}
 
-	void setFloat(std::string name, float value)
+	void setFloat(const std::string &name, float value)
 	{
 		set(name, ftos(value));
 	}
 
-	void setV3F(std::string name, v3f value)
+	void setV3F(const std::string &name, const v3f &value)
 	{
 		std::ostringstream os;
 		os<<"("<<value.X<<","<<value.Y<<","<<value.Z<<")";
 		set(name, os.str());
 	}
 
-	void setU64(std::string name, u64 value)
+	void setU64(const std::string &name, u64 value)
 	{
 		std::ostringstream os;
 		os<<value;
@@ -1486,7 +1488,7 @@ template<typename T>
 class Queue
 {
 public:
-	void push_back(T t)
+	void push_back(const T &t)
 	{
 		m_list.push_back(t);
 	}
@@ -1538,7 +1540,7 @@ public:
 		JMutexAutoLock lock(m_mutex);
 		return m_list.size();
 	}
-	void push_back(T t)
+	void push_back(const T &t)
 	{
 		JMutexAutoLock lock(m_mutex);
 		m_list.push_back(t);
@@ -1758,8 +1760,8 @@ inline int myrand_range(int min, int max)
 	Miscellaneous functions
 */
 
-bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range,
-		f32 *distance_ptr=NULL);
+bool isBlockInSight(const v3s16 &blockpos_b, const v3f &camera_pos,
+		    const v3f &camera_dir, f32 range, f32 *distance_ptr=NULL);
 
 /*
 	Queue with unique values with fast checking of value existence
@@ -1776,7 +1778,7 @@ public:
 			true: value added
 			false: value already exists
 	*/
-	bool push_back(Value value)
+	bool push_back(const Value &value)
 	{
 		// Check if already exists
 		if(m_map.find(value) != NULL)
@@ -1952,7 +1954,7 @@ inline std::string wrap_rows(const std::string &from, u32 rowlen)
 /*
 	Returns integer position of node in given floating point position
 */
-inline v3s16 floatToInt(v3f p, f32 d)
+inline v3s16 floatToInt(const v3f &p, f32 d)
 {
 	v3s16 p2(
 		(p.X + (p.X>0 ? d/2 : -d/2))/d,
@@ -1964,7 +1966,7 @@ inline v3s16 floatToInt(v3f p, f32 d)
 /*
 	Returns floating point position of node in given integer position
 */
-inline v3f intToFloat(v3s16 p, f32 d)
+inline v3f intToFloat(const v3s16 &p, f32 d)
 {
 	v3f p2(
 		(f32)p.X * d,
@@ -2097,7 +2099,7 @@ inline u32 time_to_daynight_ratio(u32 time_of_day)
 }
 
 // Random helper. Usually d=BS
-inline core::aabbox3d<f32> getNodeBox(v3s16 p, float d)
+inline core::aabbox3d<f32> getNodeBox(const v3s16 &p, float d)
 {
 	return core::aabbox3d<f32>(
 		(float)p.X * d - 0.5*d,
@@ -2135,7 +2137,8 @@ protected:
 	float m_accumulator;
 };
 
-std::string translatePassword(std::string playername, std::wstring password);
+std::string translatePassword(const std::string &playername,
+			      const std::wstring &password);
 
 #endif
 

@@ -162,8 +162,8 @@ void mysrand(unsigned seed)
 	camera_dir: an unit vector pointing to camera direction
 	range: viewing range
 */
-bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range,
-		f32 *distance_ptr)
+bool isBlockInSight(const v3s16 &blockpos_b, const v3f &camera_pos,
+		    const v3f &camera_dir, f32 range, f32 *distance_ptr)
 {
 	v3s16 blockpos_nodes = blockpos_b * MAP_BLOCKSIZE;
 	
@@ -224,7 +224,8 @@ bool isBlockInSight(v3s16 blockpos_b, v3f camera_pos, v3f camera_dir, f32 range,
 // their password. (Exception : if the password field is
 // blank, we send a blank password - this is for backwards
 // compatibility with password-less players).
-std::string translatePassword(std::string playername, std::wstring password)
+std::string translatePassword(const std::string &playername,
+			      const std::wstring &password)
 {
 	if(password.length() == 0)
 		return "";
