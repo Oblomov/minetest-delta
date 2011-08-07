@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 struct TextDest
 {
-	virtual void gotText(std::wstring text) = 0;
+	virtual void gotText(const std::wstring &text) = 0;
 };
 
 class GUITextInputMenu : public GUIModalMenu
@@ -37,14 +37,14 @@ public:
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
 			TextDest *dest,
-			std::wstring initial_text);
+			const std::wstring &initial_text);
 	~GUITextInputMenu();
 	
 	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
-	void regenerateGui(v2u32 screensize);
+	void regenerateGui(const v2u32 &screensize);
 
 	void drawMenu();
 

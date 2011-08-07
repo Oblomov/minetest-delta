@@ -119,7 +119,7 @@ public:
 		}
 	}
 
-	virtual void regenerateGui(v2u32 screensize) = 0;
+	virtual void regenerateGui(const v2u32 &screensize) = 0;
 	virtual void drawMenu() = 0;
 	virtual bool OnEvent(const SEvent& event) { return false; };
 

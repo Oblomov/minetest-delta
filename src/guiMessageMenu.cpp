@@ -27,7 +27,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 GUIMessageMenu::GUIMessageMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr,
-		std::wstring message_text
+		const std::wstring &message_text
 ):
 	GUIModalMenu(env, parent, id, menumgr),
 	m_message_text(message_text),
@@ -54,7 +54,7 @@ void GUIMessageMenu::removeChildren()
 	}
 }
 
-void GUIMessageMenu::regenerateGui(v2u32 screensize)
+void GUIMessageMenu::regenerateGui(const v2u32 &screensize)
 {
 	/*
 		Remove stuff

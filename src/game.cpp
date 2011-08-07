@@ -85,13 +85,13 @@ u16 g_selected_item = 0;
 
 struct TextDestSign : public TextDest
 {
-	TextDestSign(v3s16 blockpos, s16 id, Client *client)
+	TextDestSign(const v3s16 &blockpos, s16 id, Client *client)
 	{
 		m_blockpos = blockpos;
 		m_id = id;
 		m_client = client;
 	}
-	void gotText(std::wstring text)
+	void gotText(const std::wstring &text)
 	{
 		std::string ntext = wide_to_narrow(text);
 		dstream<<"Changing text of a sign object: "
@@ -110,7 +110,7 @@ struct TextDestChat : public TextDest
 	{
 		m_client = client;
 	}
-	void gotText(std::wstring text)
+	void gotText(const std::wstring &text)
 	{
 		// Discard empty line
 		if(text == L"")
@@ -139,12 +139,12 @@ struct TextDestChat : public TextDest
 
 struct TextDestSignNode : public TextDest
 {
-	TextDestSignNode(v3s16 p, Client *client)
+	TextDestSignNode(const v3s16 &p, Client *client)
 	{
 		m_p = p;
 		m_client = client;
 	}
-	void gotText(std::wstring text)
+	void gotText(const std::wstring &text)
 	{
 		std::string ntext = wide_to_narrow(text);
 		dstream<<"Changing text of a sign node: "
@@ -298,7 +298,7 @@ void updateViewingRange(f32 frametime_in, Client *client)
 	Hotbar draw routine
 */
 void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
-		v2s32 centerlowerpos, s32 imgsize, s32 itemcount,
+		const v2s32 &centerlowerpos, s32 imgsize, s32 itemcount,
 		Inventory *inventory, s32 halfheartcount)
 {
 	InventoryList *mainlist = inventory->getList("main");
@@ -387,8 +387,8 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 /*
 	Find what the player is pointing at
 */
-void getPointedNode(Client *client, v3f player_position,
-		v3f camera_direction, v3f camera_position,
+void getPointedNode(Client *client, const v3f &player_position,
+		const v3f &camera_direction, const v3f &camera_position,
 		bool &nodefound, core::line3d<f32> shootline,
 		v3s16 &nodepos, v3s16 &neighbourpos,
 		core::aabbox3d<f32> &nodehilightbox,
@@ -760,13 +760,13 @@ void the_game(
 	InputHandler *input,
 	IrrlichtDevice *device,
 	gui::IGUIFont* font,
-	std::string map_dir,
-	std::string playername,
-	std::string password,
-	std::string address,
+	const std::string &map_dir,
+	const std::string &playername,
+	const std::string &password,
+	const std::string &address,
 	u16 port,
 	std::wstring &error_message,
-    std::string configpath
+    const std::string &configpath
 )
 {
 	video::IVideoDriver* driver = device->getVideoDriver();

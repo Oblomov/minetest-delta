@@ -31,14 +31,14 @@ public:
 	GUIMessageMenu(gui::IGUIEnvironment* env,
 			gui::IGUIElement* parent, s32 id,
 			IMenuManager *menumgr,
-			std::wstring message_text);
+			const std::wstring &message_text);
 	~GUIMessageMenu();
 	
 	void removeChildren();
 	/*
 		Remove and re-add (or reposition) stuff
 	*/
-	void regenerateGui(v2u32 screensize);
+	void regenerateGui(const v2u32 &screensize);
 
 	void drawMenu();
 

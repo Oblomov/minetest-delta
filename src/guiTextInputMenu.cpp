@@ -28,7 +28,7 @@ GUITextInputMenu::GUITextInputMenu(gui::IGUIEnvironment* env,
 		gui::IGUIElement* parent, s32 id,
 		IMenuManager *menumgr,
 		TextDest *dest,
-		std::wstring initial_text
+		const std::wstring &initial_text
 ):
 	GUIModalMenu(env, parent, id, menumgr),
 	m_dest(dest),
@@ -57,7 +57,7 @@ void GUITextInputMenu::removeChildren()
 	}
 }
 
-void GUITextInputMenu::regenerateGui(v2u32 screensize)
+void GUITextInputMenu::regenerateGui(const v2u32 &screensize)
 {
 	std::wstring text;
 

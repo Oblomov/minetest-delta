@@ -65,13 +65,13 @@ void the_game(
 	InputHandler *input,
 	IrrlichtDevice *device,
 	gui::IGUIFont* font,
-	std::string map_dir,
-	std::string playername,
-	std::string password,
-	std::string address,
+	const std::string &map_dir,
+	const std::string &playername,
+	const std::string &password,
+	const std::string &address,
 	u16 port,
 	std::wstring &error_message,
-	std::string configpath
+	const std::string &configpath
 );
 
 #endif
