@@ -80,7 +80,7 @@ void MeshMakeData::fill(u32 daynight_ratio, MapBlock *block)
 /*
 	vertex_dirs: v3s16[4]
 */
-void getNodeVertexDirs(v3s16 dir, v3s16 *vertex_dirs)
+void getNodeVertexDirs(const v3s16 &dir, v3s16 *vertex_dirs)
 {
 	/*
 		If looked from outside the node towards the face, the corners are:
@@ -166,15 +166,16 @@ struct FastFace
 	video::S3DVertex vertices[4]; // Precalculated vertices
 };
 
-void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
-		v3s16 dir, v3f scale, v3f posRelative_f,
+void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3,
+		const v3f &p,
+		const v3s16 &dir, const v3f &scale, const v3f &posRelative_f,
 		core::array<FastFace> &dest)
 {
 	FastFace face;
 	
 	// Position is at the center of the cube.
 	v3f pos = p * BS;
-	posRelative_f *= BS;
+	v3f relpos = posRelative_f * BS;
 
 	v3f vertex_pos[4];
 	v3s16 vertex_dirs[4];
@@ -193,7 +194,7 @@ void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 		vertex_pos[i].X *= scale.X;
 		vertex_pos[i].Y *= scale.Y;
 		vertex_pos[i].Z *= scale.Z;
-		vertex_pos[i] += pos + posRelative_f;
+		vertex_pos[i] += pos + relpos;
 	}
 
 	f32 abs_scale = 1.;
@@ -248,8 +249,8 @@ void makeFastFace(TileSpec tile, u8 li0, u8 li1, u8 li2, u8 li3, v3f p,
 	Gets node tile from any place relative to block.
 	Returns TILE_NODE if doesn't exist or should not be drawn.
 */
-TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
-		NodeModMap &temp_mods)
+TileSpec getNodeTile(const MapNode &mn, const v3s16 &p, const v3s16 &face_dir,
+		const NodeModMap &temp_mods)
 {
 	TileSpec spec;
 	spec = mn.getTile(face_dir);
@@ -300,7 +301,7 @@ TileSpec getNodeTile(MapNode mn, v3s16 p, v3s16 face_dir,
 	return spec;
 }
 
-content_t getNodeContent(v3s16 p, MapNode mn, NodeModMap &temp_mods)
+content_t getNodeContent(const v3s16 &p, const MapNode &mn, const NodeModMap &temp_mods)
 {
 	/*
 		Check temporary modifications on this node
@@ -350,7 +351,7 @@ v3s16 dirs8[8] = {
 };
 
 // Calculate lighting at the XYZ- corner of p
-u8 getSmoothLight(v3s16 p, VoxelManipulator &vmanip, u32 daynight_ratio)
+u8 getSmoothLight(const v3s16 &p, VoxelManipulator &vmanip, u32 daynight_ratio)
 {
 	u16 ambient_occlusion = 0;
 	u16 light = 0;
@@ -387,7 +388,7 @@ u8 getSmoothLight(v3s16 p, VoxelManipulator &vmanip, u32 daynight_ratio)
 }
 
 // Calculate lighting at the given corner of p
-u8 getSmoothLight(v3s16 p, v3s16 corner,
+u8 getSmoothLight(v3s16 p, const v3s16 &corner,
 		VoxelManipulator &vmanip, u32 daynight_ratio)
 {
 	if(corner.X == 1) p.X += 1;
@@ -402,12 +403,12 @@ u8 getSmoothLight(v3s16 p, v3s16 corner,
 
 void getTileInfo(
 		// Input:
-		v3s16 blockpos_nodes,
-		v3s16 p,
-		v3s16 face_dir,
+		const v3s16 &blockpos_nodes,
+		const v3s16 &p,
+		const v3s16 &face_dir,
 		u32 daynight_ratio,
 		VoxelManipulator &vmanip,
-		NodeModMap &temp_mods,
+		const NodeModMap &temp_mods,
 		bool smooth_lighting,
 		// Output:
 		bool &makes_face,
@@ -474,17 +475,17 @@ void getTileInfo(
 */
 void updateFastFaceRow(
 		u32 daynight_ratio,
-		v3f posRelative_f,
-		v3s16 startpos,
+		const v3f &posRelative_f,
+		const v3s16 &startpos,
 		u16 length,
-		v3s16 translate_dir,
-		v3f translate_dir_f,
-		v3s16 face_dir,
-		v3f face_dir_f,
+		const v3s16 &translate_dir,
+		const v3f &translate_dir_f,
+		const v3s16 &face_dir,
+		const v3f &face_dir_f,
 		core::array<FastFace> &dest,
-		NodeModMap &temp_mods,
+		const NodeModMap &temp_mods,
 		VoxelManipulator &vmanip,
-		v3s16 blockpos_nodes,
+		const v3s16 &blockpos_nodes,
 		bool smooth_lighting)
 {
 	v3s16 p = startpos;

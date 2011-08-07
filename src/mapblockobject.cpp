@@ -62,7 +62,7 @@ v3f MovingObject::getAbsoluteShowPos()
 	return blockpos + m_showpos;
 }
 
-void MovingObject::move(float dtime, v3f acceleration)
+void MovingObject::move(float dtime, const v3f &acceleration)
 {
 	DSTACKF("%s: typeid=%i, pos=(%f,%f,%f), speed=(%f,%f,%f)"
 			", dtime=%f, acc=(%f,%f,%f)",
@@ -916,7 +916,7 @@ bool MapBlockObjectList::wrapObject(MapBlockObject *object)
 	return false;
 }
 
-void MapBlockObjectList::getObjects(v3f origin, f32 max_d,
+void MapBlockObjectList::getObjects(const v3f &origin, f32 max_d,
 		core::array<DistanceSortedObject> &dest)
 {
 	for(core::map<s16, MapBlockObject*>::Iterator

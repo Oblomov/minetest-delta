@@ -119,7 +119,7 @@ public:
 class MapBlock /*: public NodeContainer*/
 {
 public:
-	MapBlock(Map *parent, v3s16 pos, bool dummy=false);
+	MapBlock(Map *parent, const v3s16 &pos, bool dummy=false);
 	~MapBlock();
 	
 	/*virtual u16 nodeContainerId() const
@@ -278,7 +278,7 @@ public:
 		Regular MapNode get-setters
 	*/
 	
-	bool isValidPosition(v3s16 p)
+	bool isValidPosition(const v3s16 &p)
 	{
 		if(data == NULL)
 			return false;
@@ -297,12 +297,12 @@ public:
 		return data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x];
 	}
 	
-	MapNode getNode(v3s16 p)
+	MapNode getNode(const v3s16 &p)
 	{
 		return getNode(p.X, p.Y, p.Z);
 	}
 	
-	MapNode getNodeNoEx(v3s16 p)
+	MapNode getNodeNoEx(const v3s16 &p)
 	{
 		try{
 			return getNode(p.X, p.Y, p.Z);
@@ -311,7 +311,7 @@ public:
 		}
 	}
 	
-	void setNode(s16 x, s16 y, s16 z, MapNode & n)
+	void setNode(s16 x, s16 y, s16 z, const MapNode & n)
 	{
 		if(data == NULL)
 			throw InvalidPositionException();
@@ -322,7 +322,7 @@ public:
 		raiseModified(MOD_STATE_WRITE_NEEDED);
 	}
 	
-	void setNode(v3s16 p, MapNode & n)
+	void setNode(const v3s16 &p, const MapNode & n)
 	{
 		setNode(p.X, p.Y, p.Z, n);
 	}
@@ -338,12 +338,12 @@ public:
 		return data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x];
 	}
 	
-	MapNode getNodeNoCheck(v3s16 p)
+	MapNode getNodeNoCheck(const v3s16 &p)
 	{
 		return getNodeNoCheck(p.X, p.Y, p.Z);
 	}
 	
-	void setNodeNoCheck(s16 x, s16 y, s16 z, MapNode & n)
+	void setNodeNoCheck(s16 x, s16 y, s16 z, const MapNode & n)
 	{
 		if(data == NULL)
 			throw InvalidPositionException();
@@ -351,7 +351,7 @@ public:
 		raiseModified(MOD_STATE_WRITE_NEEDED);
 	}
 	
-	void setNodeNoCheck(v3s16 p, MapNode & n)
+	void setNodeNoCheck(const v3s16 &p, const MapNode & n)
 	{
 		setNodeNoCheck(p.X, p.Y, p.Z, n);
 	}
@@ -360,12 +360,13 @@ public:
 		These functions consult the parent container if the position
 		is not valid on this MapBlock.
 	*/
-	bool isValidPositionParent(v3s16 p);
-	MapNode getNodeParent(v3s16 p);
-	void setNodeParent(v3s16 p, MapNode & n);
-	MapNode getNodeParentNoEx(v3s16 p);
+	bool isValidPositionParent(const v3s16 &p);
+	MapNode getNodeParent(const v3s16 &p);
+	void setNodeParent(const v3s16 &p, const MapNode & n);
+	MapNode getNodeParentNoEx(const v3s16 &p);
 
-	void drawbox(s16 x0, s16 y0, s16 z0, s16 w, s16 h, s16 d, MapNode node)
+	void drawbox(s16 x0, s16 y0, s16 z0, s16 w, s16 h, s16 d,
+			const MapNode &node)
 	{
 		for(u16 z=0; z<d; z++)
 			for(u16 y=0; y<h; y++)
@@ -388,7 +389,8 @@ public:
 				getNodeParentNoEx(p + face_dir),
 				face_dir);
 	}*/
-	u8 getFaceLight2(u32 daynight_ratio, v3s16 p, v3s16 face_dir)
+	u8 getFaceLight2(u32 daynight_ratio, const v3s16 &p,
+			const v3s16 &face_dir)
 	{
 		return getFaceLight(daynight_ratio,
 				getNodeParentNoEx(p),
@@ -470,7 +472,7 @@ public:
 	void stepObjects(float dtime, bool server, u32 daynight_ratio);
 
 	// origin is relative to block
-	void getObjects(v3f origin, f32 max_d,
+	void getObjects(const v3f &origin, f32 max_d,
 			core::array<DistanceSortedObject> &dest)
 	{
 		m_objects.getObjects(origin, max_d, dest);
@@ -488,7 +490,7 @@ public:
 
 		returns true if the mod was different last time
 	*/
-	bool setTempMod(v3s16 p, const NodeMod &mod)
+	bool setTempMod(const v3s16 &p, const NodeMod &mod)
 	{
 		/*dstream<<"setTempMod called on block"
 				<<" ("<<p.X<<","<<p.Y<<","<<p.Z<<")"
@@ -500,13 +502,13 @@ public:
 		return m_temp_mods.set(p, mod);
 	}
 	// Returns true if there was one
-	bool getTempMod(v3s16 p, NodeMod *mod)
+	bool getTempMod(const v3s16 &p, NodeMod *mod)
 	{
 		JMutexAutoLock lock(m_temp_mods_mutex);
 
 		return m_temp_mods.get(p, mod);
 	}
-	bool clearTempMod(v3s16 p)
+	bool clearTempMod(const v3s16 &p)
 	{
 		JMutexAutoLock lock(m_temp_mods_mutex);
 
@@ -554,7 +556,7 @@ public:
 			-3 = random fail
 			0...MAP_BLOCKSIZE-1 = ground level
 	*/
-	s16 getGroundLevel(v2s16 p2d);
+	s16 getGroundLevel(const v2s16 &p2d);
 
 	/*
 		Timestamp (see m_timestamp)
@@ -619,7 +621,7 @@ private:
 		if(z < 0 || z >= MAP_BLOCKSIZE) throw InvalidPositionException();
 		return data[z*MAP_BLOCKSIZE*MAP_BLOCKSIZE + y*MAP_BLOCKSIZE + x];
 	}
-	MapNode & getNodeRef(v3s16 &p)
+	MapNode & getNodeRef(const v3s16 &p)
 	{
 		return getNodeRef(p.X, p.Y, p.Z);
 	}
@@ -714,7 +716,7 @@ private:
 	float m_usage_timer;
 };
 
-inline bool blockpos_over_limit(v3s16 p)
+inline bool blockpos_over_limit(const v3s16 &p)
 {
 	return
 	  (p.X < -MAP_GENERATION_LIMIT / MAP_BLOCKSIZE
@@ -728,12 +730,12 @@ inline bool blockpos_over_limit(v3s16 p)
 /*
 	Returns the position of the block where the node is located
 */
-inline v3s16 getNodeBlockPos(v3s16 p)
+inline v3s16 getNodeBlockPos(const v3s16 &p)
 {
 	return getContainerPos(p, MAP_BLOCKSIZE);
 }
 
-inline v2s16 getNodeSectorPos(v2s16 p)
+inline v2s16 getNodeSectorPos(const v2s16 &p)
 {
 	return getContainerPos(p, MAP_BLOCKSIZE);
 }

@@ -43,7 +43,7 @@ class MapSector
 {
 public:
 	
-	MapSector(Map *parent, v2s16 pos);
+	MapSector(Map *parent, const v2s16 &pos);
 	virtual ~MapSector();
 
 	virtual u32 getId() const = 0;
@@ -92,7 +92,7 @@ protected:
 class ServerMapSector : public MapSector
 {
 public:
-	ServerMapSector(Map *parent, v2s16 pos);
+	ServerMapSector(Map *parent, const v2s16 &pos);
 	~ServerMapSector();
 	
 	u32 getId() const
@@ -110,7 +110,7 @@ public:
 	static ServerMapSector* deSerialize(
 			std::istream &is,
 			Map *parent,
-			v2s16 p2d,
+			const v2s16 &p2d,
 			core::map<v2s16, MapSector*> & sectors
 		);
 		
@@ -121,7 +121,7 @@ private:
 class ClientMapSector : public MapSector
 {
 public:
-	ClientMapSector(Map *parent, v2s16 pos);
+	ClientMapSector(Map *parent, const v2s16 &pos);
 	~ClientMapSector();
 	
 	u32 getId() const

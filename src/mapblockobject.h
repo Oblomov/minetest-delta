@@ -42,7 +42,7 @@ class MapBlock;
 class MapBlockObject
 {
 public:
-	MapBlockObject(MapBlock *block, s16 id, v3f pos):
+	MapBlockObject(MapBlock *block, s16 id, const v3f &pos):
 		m_collision_box(NULL),
 		m_selection_box(NULL),
 		m_block(block),
@@ -132,7 +132,7 @@ public:
 	virtual std::string getInventoryString() { return "None"; }
 	
 	// Reimplementation shall call this.
-	virtual void updatePos(v3f pos)
+	virtual void updatePos(const v3f &pos)
 	{
 		m_pos = pos;
 	}
@@ -243,7 +243,7 @@ class MovingObject : public MapBlockObject
 {
 public:
 	// The constructor of every MapBlockObject should be like this
-	MovingObject(MapBlock *block, s16 id, v3f pos):
+	MovingObject(MapBlock *block, s16 id, const v3f &pos):
 		MapBlockObject(block, id, pos),
 		m_speed(0,0,0),
 		m_oldpos(pos),
@@ -290,7 +290,7 @@ public:
 	}
 	
 	// Reimplementation shall call this.
-	virtual void updatePos(v3f pos)
+	virtual void updatePos(const v3f &pos)
 	{
 		m_oldpos = m_showpos;
 		m_pos = pos;
@@ -325,7 +325,7 @@ public:
 	*/
 	
 	// Move with collision detection, server side
-	void move(float dtime, v3f acceleration);
+	void move(float dtime, const v3f &acceleration);
 
 	// Move from old position to new position, client side
 	void simpleMove(float dtime);
@@ -345,7 +345,7 @@ class SignObject : public MapBlockObject
 {
 public:
 	// The constructor of every MapBlockObject should be like this
-	SignObject(MapBlock *block, s16 id, v3f pos):
+	SignObject(MapBlock *block, s16 id, const v3f &pos):
 		MapBlockObject(block, id, pos),
 		m_node(NULL)
 	{
@@ -525,11 +525,12 @@ public:
 #endif
 	}
 
-	void setText(std::string text)
+	void setText(const std::string &text)
 	{
 		if(text.size() > SIGN_TEXT_MAX_LENGTH)
-			text = text.substr(0, SIGN_TEXT_MAX_LENGTH);
-		m_text = text;
+			m_text = text.substr(0, SIGN_TEXT_MAX_LENGTH);
+		else
+			m_text = text;
 
 		setBlockChanged();
 	}
@@ -555,7 +556,7 @@ protected:
 class RatObject : public MovingObject
 {
 public:
-	RatObject(MapBlock *block, s16 id, v3f pos):
+	RatObject(MapBlock *block, s16 id, const v3f &pos):
 		MovingObject(block, id, pos),
 		m_node(NULL)
 	{
@@ -733,7 +734,7 @@ class ItemObject : public MapBlockObject
 {
 public:
 	// The constructor of every MapBlockObject should be like this
-	ItemObject(MapBlock *block, s16 id, v3f pos):
+	ItemObject(MapBlock *block, s16 id, const v3f &pos):
 		MapBlockObject(block, id, pos),
 		m_node(NULL)
 	{
@@ -882,7 +883,7 @@ public:
 	}
 #endif
 
-	void setItemString(std::string inventorystring)
+	void setItemString(const std::string &inventorystring)
 	{
 		m_itemstring = inventorystring;
 		setBlockChanged();
@@ -905,7 +906,7 @@ protected:
 class PlayerObject : public MovingObject
 {
 public:
-	PlayerObject(MapBlock *block, s16 id, v3f pos):
+	PlayerObject(MapBlock *block, s16 id, const v3f &pos):
 		MovingObject(block, id, pos),
 		m_node(NULL),
 		m_yaw(0)
@@ -1093,7 +1094,7 @@ public:
 	bool wrapObject(MapBlockObject *object);
 	
 	// origin is relative to block
-	void getObjects(v3f origin, f32 max_d,
+	void getObjects(const v3f &origin, f32 max_d,
 			core::array<DistanceSortedObject> &dest);
 	
 	// Number of objects

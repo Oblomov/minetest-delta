@@ -28,7 +28,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	MapBlock
 */
 
-MapBlock::MapBlock(Map *parent, v3s16 pos, bool dummy):
+MapBlock::MapBlock(Map *parent, const v3s16 &pos, bool dummy):
 		m_parent(parent),
 		m_pos(pos),
 		m_modified(MOD_STATE_WRITE_NEEDED),
@@ -72,7 +72,7 @@ MapBlock::~MapBlock()
 		delete[] data;
 }
 
-bool MapBlock::isValidPositionParent(v3s16 p)
+bool MapBlock::isValidPositionParent(const v3s16 &p)
 {
 	if(isValidPosition(p))
 	{
@@ -83,7 +83,7 @@ bool MapBlock::isValidPositionParent(v3s16 p)
 	}
 }
 
-MapNode MapBlock::getNodeParent(v3s16 p)
+MapNode MapBlock::getNodeParent(const v3s16 &p)
 {
 	if(isValidPosition(p) == false)
 	{
@@ -97,7 +97,7 @@ MapNode MapBlock::getNodeParent(v3s16 p)
 	}
 }
 
-void MapBlock::setNodeParent(v3s16 p, MapNode & n)
+void MapBlock::setNodeParent(const v3s16 &p, const MapNode & n)
 {
 	if(isValidPosition(p) == false)
 	{
@@ -111,7 +111,7 @@ void MapBlock::setNodeParent(v3s16 p, MapNode & n)
 	}
 }
 
-MapNode MapBlock::getNodeParentNoEx(v3s16 p)
+MapNode MapBlock::getNodeParentNoEx(const v3s16 &p)
 {
 	if(isValidPosition(p) == false)
 	{
@@ -492,7 +492,7 @@ void MapBlock::updateDayNightDiff()
 	m_day_night_differs = differs;
 }
 
-s16 MapBlock::getGroundLevel(v2s16 p2d)
+s16 MapBlock::getGroundLevel(const v2s16 &p2d)
 {
 	if(isDummy())
 		return -3;
