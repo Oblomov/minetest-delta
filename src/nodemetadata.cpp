@@ -187,7 +187,7 @@ NodeMetadataList::~NodeMetadataList()
 	}
 }
 
-NodeMetadata* NodeMetadataList::get(v3s16 p)
+NodeMetadata* NodeMetadataList::get(const v3s16 &p) const
 {
 	core::map<v3s16, NodeMetadata*>::Node *n;
 	n = m_data.find(p);
@@ -196,7 +196,7 @@ NodeMetadata* NodeMetadataList::get(v3s16 p)
 	return n->getValue();
 }
 
-void NodeMetadataList::remove(v3s16 p)
+void NodeMetadataList::remove(const v3s16 &p)
 {
 	NodeMetadata *olddata = get(p);
 	if(olddata)
@@ -206,7 +206,7 @@ void NodeMetadataList::remove(v3s16 p)
 	}
 }
 
-void NodeMetadataList::set(v3s16 p, NodeMetadata *d)
+void NodeMetadataList::set(const v3s16 &p, NodeMetadata *d)
 {
 	remove(p);
 	m_data.insert(p, d);

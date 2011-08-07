@@ -85,11 +85,11 @@ public:
 	void deSerialize(std::istream &is);
 	
 	// Get pointer to data
-	NodeMetadata* get(v3s16 p);
+	NodeMetadata* get(const v3s16 &p) const;
 	// Deletes data
-	void remove(v3s16 p);
+	void remove(const v3s16 &p);
 	// Deletes old data and sets a new one
-	void set(v3s16 p, NodeMetadata *d);
+	void set(const v3s16 &p, NodeMetadata *d);
 	
 	// A step in time. Returns true if something changed.
 	bool step(float dtime);
