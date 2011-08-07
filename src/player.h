@@ -44,25 +44,25 @@ public:
 	//void move(f32 dtime, Map &map);
 	virtual void move(f32 dtime, Map &map, f32 pos_max_d) = 0;
 
-	v3f getSpeed()
+	const v3f &getSpeed() const
 	{
 		return m_speed;
 	}
 
-	void setSpeed(v3f speed)
+	void setSpeed(const v3f &speed)
 	{
 		m_speed = speed;
 	}
 	
 	// Y direction is ignored
-	void accelerate(v3f target_speed, f32 max_increase);
+	void accelerate(const v3f &target_speed, f32 max_increase);
 
-	v3f getPosition()
+	const v3f &getPosition() const
 	{
 		return m_position;
 	}
 
-	virtual void setPosition(v3f position)
+	virtual void setPosition(const v3f &position)
 	{
 		m_position = position;
 	}
@@ -77,12 +77,12 @@ public:
 		m_yaw = yaw;
 	}
 
-	f32 getPitch()
+	f32 getPitch() const
 	{
 		return m_pitch;
 	}
 
-	f32 getYaw()
+	f32 getYaw() const
 	{
 		return m_yaw;
 	}
@@ -92,7 +92,7 @@ public:
 		snprintf(m_name, PLAYERNAME_SIZE, "%s", name);
 	}
 
-	const char * getName()
+	const char * getName() const
 	{
 		return m_name;
 	}
@@ -206,7 +206,7 @@ public:
 		return m_box;
 	}
 
-	void setPosition(v3f position)
+	void setPosition(const v3f &position)
 	{
 		m_oldpos = m_showpos;
 		
