@@ -40,7 +40,7 @@ struct ServerCommandContext
 
 	ServerCommandContext(
 		std::vector<std::wstring> parms,
-		std::wstring paramstring,
+		const std::wstring &paramstring,
 		Server* server,
 		ServerEnvironment *env,
 		Player* player,

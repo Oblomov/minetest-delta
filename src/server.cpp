@@ -969,7 +969,7 @@ skip_subsequent:
 	server->m_con.Send(peer_id, 0, data, false);
 }
 
-void RemoteClient::GotBlock(v3s16 p)
+void RemoteClient::GotBlock(const v3s16 &p)
 {
 	if(m_blocks_sending.find(p) != NULL)
 		m_blocks_sending.remove(p);
@@ -982,7 +982,7 @@ void RemoteClient::GotBlock(v3s16 p)
 	m_blocks_sent.insert(p, true);
 }
 
-void RemoteClient::SentBlock(v3s16 p)
+void RemoteClient::SentBlock(const v3s16 &p)
 {
 	if(m_blocks_sending.find(p) == NULL)
 		m_blocks_sending.insert(p, 0.0);
@@ -991,7 +991,7 @@ void RemoteClient::SentBlock(v3s16 p)
 				" already in m_blocks_sending"<<std::endl;
 }
 
-void RemoteClient::SetBlockNotSent(v3s16 p)
+void RemoteClient::SetBlockNotSent(const v3s16 &p)
 {
 	m_nearest_unsent_d = 0;
 	
@@ -1058,8 +1058,8 @@ u32 PIChecksum(core::list<PlayerInfo> &l)
 */
 
 Server::Server(
-		std::string mapsavedir,
-		std::string configpath
+		const std::string &mapsavedir,
+		const std::string &configpath
 	):
 	m_env(new ServerMap(mapsavedir), this),
 	m_con(PROTOCOL_ID, 512, CONNECTION_TIMEOUT, this),
@@ -3406,7 +3406,7 @@ void Server::onMapEditEvent(MapEditEvent *event)
 	m_unsent_map_edit_queue.push_back(e);
 }
 
-Inventory* Server::getInventory(InventoryContext *c, std::string id)
+Inventory* Server::getInventory(InventoryContext *c, const std::string &id)
 {
 	if(id == "current_player")
 	{
@@ -3434,7 +3434,7 @@ Inventory* Server::getInventory(InventoryContext *c, std::string id)
 	dstream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
 	return NULL;
 }
-void Server::inventoryModified(InventoryContext *c, std::string id)
+void Server::inventoryModified(InventoryContext *c, const std::string &id)
 {
 	if(id == "current_player")
 	{
@@ -3745,7 +3745,7 @@ void Server::SendMovePlayer(Player *player)
 	m_con.Send(player->peer_id, 0, data, true);
 }
 
-void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
+void Server::sendRemoveNode(const v3s16 &p, u16 ignore_id,
 	core::list<u16> *far_players, float far_d_nodes)
 {
 	float maxd = far_d_nodes*BS;
@@ -3794,7 +3794,7 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	}
 }
 
-void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
+void Server::sendAddNode(const v3s16 &p, const MapNode &n, u16 ignore_id,
 		core::list<u16> *far_players, float far_d_nodes)
 {
 	float maxd = far_d_nodes*BS;
@@ -3844,7 +3844,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 	}
 }
 
-void Server::setBlockNotSent(v3s16 p)
+void Server::setBlockNotSent(const v3s16 &p)
 {
 	for(core::map<u16, RemoteClient*>::Iterator
 		i = m_clients.getIterator();
@@ -4064,7 +4064,7 @@ std::wstring Server::getStatusString()
 	return os.str();
 }
 
-v3f findSpawnPos(ServerMap &map)
+v3f findSpawnPos(const ServerMap &map)
 {
 	//return v3f(50,50,50)*BS;
 

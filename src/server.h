@@ -33,7 +33,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 /*
 	Some random functions
 */
-v3f findSpawnPos(ServerMap &map);
+v3f findSpawnPos(const ServerMap &map);
 
 /*
 	A structure containing the data needed for queueing the fetching
@@ -72,7 +72,7 @@ public:
 	/*
 		peer_id=0 adds with nobody to send to
 	*/
-	void addBlock(u16 peer_id, v3s16 pos, u8 flags)
+	void addBlock(u16 peer_id, const v3s16 &pos, u8 flags)
 	{
 		DSTACK(__FUNCTION_NAME);
 	
@@ -210,7 +210,7 @@ u32 PIChecksum(core::list<PlayerInfo> &l);
 */
 struct PrioritySortedBlockTransfer
 {
-	PrioritySortedBlockTransfer(float a_priority, v3s16 a_pos, u16 a_peer_id)
+	PrioritySortedBlockTransfer(float a_priority, const v3s16 &a_pos, u16 a_peer_id)
 	{
 		priority = a_priority;
 		pos = a_pos;
@@ -276,11 +276,11 @@ public:
 			core::map<v3s16, bool> &stepped_blocks
 		);
 
-	void GotBlock(v3s16 p);
+	void GotBlock(const v3s16 &p);
 
-	void SentBlock(v3s16 p);
+	void SentBlock(const v3s16 &p);
 
-	void SetBlockNotSent(v3s16 p);
+	void SetBlockNotSent(const v3s16 &p);
 	void SetBlocksNotSent(core::map<v3s16, MapBlock*> &blocks);
 
 	s32 SendingCount()
@@ -367,8 +367,8 @@ public:
 	*/
 
 	Server(
-		std::string mapsavedir,
-		std::string configpath
+		const std::string &mapsavedir,
+		const std::string &configpath
 	);
 	~Server();
 	void start(unsigned short port);
@@ -410,8 +410,8 @@ public:
 	/*
 		Shall be called with the environment and the connection locked.
 	*/
-	Inventory* getInventory(InventoryContext *c, std::string id);
-	void inventoryModified(InventoryContext *c, std::string id);
+	Inventory* getInventory(InventoryContext *c, const std::string &id);
+	void inventoryModified(InventoryContext *c, const std::string &id);
 
 	// Connection must be locked when called
 	std::wstring getStatusString();
@@ -488,11 +488,11 @@ private:
 		far_d_nodes are ignored and their peer_ids are added to far_players
 	*/
 	// Envlock and conlock should be locked when calling these
-	void sendRemoveNode(v3s16 p, u16 ignore_id=0,
+	void sendRemoveNode(const v3s16 &p, u16 ignore_id=0,
 			core::list<u16> *far_players=NULL, float far_d_nodes=100);
-	void sendAddNode(v3s16 p, MapNode n, u16 ignore_id=0,
+	void sendAddNode(const v3s16 &p, const MapNode &n, u16 ignore_id=0,
 			core::list<u16> *far_players=NULL, float far_d_nodes=100);
-	void setBlockNotSent(v3s16 p);
+	void setBlockNotSent(const v3s16 &p);
 	
 	// Environment and Connection must be locked when called
 	void SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver);
