@@ -51,12 +51,12 @@ public:
 		NOTE: m_env can be NULL, but step() isn't called if it is.
 		Prototypes are used that way.
 	*/
-	ServerActiveObject(ServerEnvironment *env, u16 id, v3f pos);
+	ServerActiveObject(ServerEnvironment *env, u16 id, const v3f &pos);
 	virtual ~ServerActiveObject();
 
 	// Create a certain type of ServerActiveObject
 	static ServerActiveObject* create(u8 type,
-			ServerEnvironment *env, u16 id, v3f pos,
+			ServerEnvironment *env, u16 id, const v3f &pos,
 			const std::string &data);
 	
 	/*
@@ -64,7 +64,7 @@ public:
 	*/
 	v3f getBasePosition()
 		{return m_base_position;}
-	void setBasePosition(v3f pos)
+	void setBasePosition(const v3f &pos)
 		{m_base_position = pos;}
 	ServerEnvironment* getEnv()
 		{return m_env;}
@@ -104,7 +104,7 @@ public:
 		If the object doesn't return an item, this will be called.
 		Return value is tool wear.
 	*/
-	virtual u16 punch(const std::string &toolname, v3f dir)
+	virtual u16 punch(const std::string &toolname, const v3f &dir)
 	{return 0;}
 
 	/*
@@ -157,7 +157,7 @@ public:
 protected:
 	// Used for creating objects based on type
 	typedef ServerActiveObject* (*Factory)
-			(ServerEnvironment *env, u16 id, v3f pos,
+			(ServerEnvironment *env, u16 id, const v3f &pos,
 			const std::string &data);
 	static void registerType(u16 type, Factory f);
 
