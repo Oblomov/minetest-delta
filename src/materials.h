@@ -61,13 +61,13 @@ public:
 	{
 	}
 
-	void set(const std::string toolname,
+	void set(const std::string &toolname,
 			const DiggingProperties &prop)
 	{
 		m_digging_properties[toolname] = prop;
 	}
 
-	DiggingProperties get(const std::string toolname)
+	DiggingProperties get(const std::string &toolname)
 	{
 		core::map<std::string, DiggingProperties>::Node *n;
 		n = m_digging_properties.find(toolname);
