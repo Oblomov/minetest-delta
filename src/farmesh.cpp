@@ -113,7 +113,7 @@ struct HeightPoint
 };
 core::map<v2s16, HeightPoint> g_heights;
 
-HeightPoint ground_height(u64 seed, v2s16 p2d)
+HeightPoint ground_height(u64 seed, const v2s16 &p2d)
 {
 	core::map<v2s16, HeightPoint>::Node *n = g_heights.find(p2d);
 	if(n)
@@ -404,7 +404,7 @@ void FarMesh::step(float dtime)
 	m_time += dtime;
 }
 
-void FarMesh::update(v2f camera_p, float brightness)
+void FarMesh::update(const v2f &camera_p, float brightness)
 {
 	m_camera_pos = camera_p;
 	m_brightness = brightness;
