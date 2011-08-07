@@ -59,7 +59,7 @@ public:
 	// Shall return a text to show in the GUI
 	virtual std::string getText() { return ""; }
 	// Creates an object from the item, to be placed in the world.
-	virtual ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, v3f pos);
+	virtual ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, const v3f &pos);
 	// Gets amount of items that dropping one SAO will decrement
 	virtual u16 getDropCount(){ return getCount(); }
 
@@ -195,7 +195,7 @@ private:
 class MapBlockObjectItem : public InventoryItem
 {
 public:
-	MapBlockObjectItem(std::string inventorystring):
+	MapBlockObjectItem(const std::string &inventorystring):
 		InventoryItem(1)
 	{
 		m_inventorystring = inventorystring;
@@ -240,7 +240,8 @@ public:
 		return m_inventorystring;
 	}
 
-	MapBlockObject * createObject(v3f pos, f32 player_yaw, f32 player_pitch);
+	MapBlockObject * createObject(const v3f &pos,
+			f32 player_yaw, f32 player_pitch);
 
 private:
 	std::string m_inventorystring;
@@ -254,7 +255,7 @@ private:
 class CraftItem : public InventoryItem
 {
 public:
-	CraftItem(std::string subname, u16 count):
+	CraftItem(const std::string &subname, u16 count):
 		InventoryItem(count)
 	{
 		m_subname = subname;
@@ -288,7 +289,8 @@ public:
 		return os.str();
 	}
 
-	ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, v3f pos);
+	ServerActiveObject* createSAO(ServerEnvironment *env, u16 id,
+			const v3f &pos);
 	u16 getDropCount();
 
 	virtual bool addableTo(InventoryItem *other)
@@ -330,7 +332,7 @@ private:
 class ToolItem : public InventoryItem
 {
 public:
-	ToolItem(std::string toolname, u16 wear):
+	ToolItem(const std::string &toolname, u16 wear):
 		InventoryItem(1)
 	{
 		m_toolname = toolname;
@@ -458,7 +460,7 @@ private:
 class InventoryList
 {
 public:
-	InventoryList(std::string name, u32 size);
+	InventoryList(const std::string &name, u32 size);
 	~InventoryList();
 	void clearItems();
 	void serialize(std::ostream &os);
@@ -572,10 +574,10 @@ public:
 		- "current_player"
 		- "nodemeta:X,Y,Z"
 	*/
-	virtual Inventory* getInventory(InventoryContext *c, std::string id)
+	virtual Inventory* getInventory(InventoryContext *c, const std::string &id)
 		{return NULL;}
 	// Used on the server by InventoryAction::apply and other stuff
-	virtual void inventoryModified(InventoryContext *c, std::string id)
+	virtual void inventoryModified(InventoryContext *c, const std::string &id)
 		{}
 	// Used on the client
 	virtual void inventoryAction(InventoryAction *a)
@@ -676,7 +678,7 @@ struct ItemSpec
 		type(ITEM_NONE)
 	{
 	}
-	ItemSpec(enum ItemSpecType a_type, std::string a_name):
+	ItemSpec(enum ItemSpecType a_type, const std::string &a_name):
 		type(a_type),
 		name(a_name),
 		num(65535)

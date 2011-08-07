@@ -122,7 +122,8 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 	}
 }
 
-ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id, v3f pos)
+ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id,
+		const v3f &pos)
 {
 	/*
 		Create an ItemSAO
@@ -166,7 +167,7 @@ video::ITexture * CraftItem::getImage()
 }
 #endif
 
-ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, u16 id, v3f pos)
+ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, u16 id, const v3f &pos)
 {
 	// Special cases
 	ServerActiveObject *obj = item_craft_create_object(m_subname, env, id, pos);
@@ -238,7 +239,7 @@ std::string MapBlockObjectItem::getText()
 }
 
 MapBlockObject * MapBlockObjectItem::createObject
-		(v3f pos, f32 player_yaw, f32 player_pitch)
+		(const v3f &pos, f32 player_yaw, f32 player_pitch)
 {
 	std::istringstream is(m_inventorystring);
 	std::string name;
@@ -285,7 +286,7 @@ MapBlockObject * MapBlockObjectItem::createObject
 	Inventory
 */
 
-InventoryList::InventoryList(std::string name, u32 size)
+InventoryList::InventoryList(const std::string &name, u32 size)
 {
 	m_name = name;
 	m_size = size;
