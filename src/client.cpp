@@ -1556,7 +1556,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 }
 
-void Client::Send(u16 channelnum, SharedBuffer<u8> data, bool reliable)
+void Client::Send(u16 channelnum, SharedBuffer<u8> data, bool reliable) const
 {
 	//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 	m_con.Send(PEER_ID_SERVER, channelnum, data, reliable);
@@ -1646,7 +1646,8 @@ void Client::clickActiveObject(u8 button, u16 id, u16 item)
 	Send(0, data, true);
 }
 
-void Client::sendSignText(const v3s16 &blockpos, s16 id, std::string text)
+void Client::sendSignText(const v3s16 &blockpos, s16 id,
+		const std::string &text) const
 {
 	/*
 		u16 command
@@ -1685,7 +1686,7 @@ void Client::sendSignText(const v3s16 &blockpos, s16 id, std::string text)
 	Send(0, data, true);
 }
 	
-void Client::sendSignNodeText(const v3s16 &p, std::string text)
+void Client::sendSignNodeText(const v3s16 &p, const std::string &text) const
 {
 	/*
 		u16 command
@@ -1719,7 +1720,7 @@ void Client::sendSignNodeText(const v3s16 &p, std::string text)
 	Send(0, data, true);
 }
 	
-void Client::sendInventoryAction(InventoryAction *a)
+void Client::sendInventoryAction(const InventoryAction *a) const
 {
 	std::ostringstream os(std::ios_base::binary);
 	u8 buf[12];
@@ -1737,7 +1738,7 @@ void Client::sendInventoryAction(InventoryAction *a)
 	Send(0, data, true);
 }
 
-void Client::sendChatMessage(const std::wstring &message)
+void Client::sendChatMessage(const std::wstring &message) const
 {
 	std::ostringstream os(std::ios_base::binary);
 	u8 buf[12];
@@ -1766,7 +1767,7 @@ void Client::sendChatMessage(const std::wstring &message)
 }
 
 void Client::sendChangePassword(const std::wstring &oldpassword,
-		const std::wstring &newpassword)
+		const std::wstring &newpassword) const
 {
 	Player *player = m_env.getLocalPlayer();
 	if(player == NULL)
@@ -1802,7 +1803,7 @@ void Client::sendChangePassword(const std::wstring &oldpassword,
 }
 
 
-void Client::sendDamage(u8 damage)
+void Client::sendDamage(u8 damage) const
 {
 	DSTACK(__FUNCTION_NAME);
 	std::ostringstream os(std::ios_base::binary);
@@ -1817,7 +1818,7 @@ void Client::sendDamage(u8 damage)
 	Send(0, data, true);
 }
 
-void Client::sendPlayerPos()
+void Client::sendPlayerPos() const
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	
@@ -1924,18 +1925,18 @@ void Client::updateCamera(const v3f &pos, const v3f &dir)
 	camera_direction = dir;
 }
 
-MapNode Client::getNode(const v3s16 &p)
+MapNode Client::getNode(const v3s16 &p) const
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	return m_env.getMap().getNode(p);
 }
 
-NodeMetadata* Client::getNodeMetadata(const v3s16 &p)
+NodeMetadata* Client::getNodeMetadata(const v3s16 &p) const
 {
 	return m_env.getMap().getNodeMetadata(p);
 }
 
-v3f Client::getPlayerPosition()
+v3f Client::getPlayerPosition() const
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	LocalPlayer *player = m_env.getLocalPlayer();
@@ -1963,12 +1964,17 @@ bool Client::getLocalInventoryUpdated()
 }
 
 // Copies the inventory of the local player to parameter
-void Client::getLocalInventory(Inventory &dst)
+void Client::getLocalInventory(Inventory &dst) const
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	dst = player->inventory;
+}
+
+const InventoryContext *Client::getInventoryContext() const
+{
+	return &m_inventory_context;
 }
 
 InventoryContext *Client::getInventoryContext()
@@ -2116,7 +2122,7 @@ ClientActiveObject * Client::getSelectedActiveObject(
 	return NULL;
 }
 
-void Client::printDebugInfo(std::ostream &os)
+void Client::printDebugInfo(std::ostream &os) const
 {
 	//JMutexAutoLock lock1(m_fetchblock_mutex);
 	/*JMutexAutoLock lock2(m_incoming_queue_mutex);
@@ -2127,13 +2133,13 @@ void Client::printDebugInfo(std::ostream &os)
 		<<std::endl;*/
 }
 	
-u32 Client::getDayNightRatio()
+u32 Client::getDayNightRatio() const
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	return m_env.getDayNightRatio();
 }
 
-u16 Client::getHP()
+u16 Client::getHP() const
 {
 	Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);

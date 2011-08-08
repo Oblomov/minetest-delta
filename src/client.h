@@ -69,7 +69,7 @@ public:
 	// Returns NULL if queue is empty
 	QueuedMeshUpdate * pop();
 
-	u32 size()
+	u32 size() const
 	{
 		JMutexAutoLock lock(m_mutex);
 		return m_queue.size();
@@ -77,7 +77,7 @@ public:
 	
 private:
 	core::list<QueuedMeshUpdate*> m_queue;
-	JMutex m_mutex;
+	mutable JMutex m_mutex;
 };
 
 struct MeshUpdateResult
@@ -176,7 +176,7 @@ public:
 	// Returns true if something was received
 	bool AsyncProcessPacket();
 	bool AsyncProcessData();
-	void Send(u16 channelnum, SharedBuffer<u8> data, bool reliable);
+	void Send(u16 channelnum, SharedBuffer<u8> data, bool reliable) const;
 
 	// Pops out a packet from the packet queue
 	//IncomingPacket getPacket();
@@ -186,13 +186,15 @@ public:
 	void clickObject(u8 button, const v3s16 &blockpos, s16 id, u16 item);
 	void clickActiveObject(u8 button, u16 id, u16 item);
 
-	void sendSignText(const v3s16 &blockpos, s16 id, std::string text);
-	void sendSignNodeText(const v3s16 &p, std::string text);
-	void sendInventoryAction(InventoryAction *a);
-	void sendChatMessage(const std::wstring &message);
+	void sendSignText(const v3s16 &blockpos, s16 id,
+			const std::string &text) const;
+	void sendSignNodeText(const v3s16 &p,
+			const std::string &text) const;
+	void sendInventoryAction(const InventoryAction *a) const;
+	void sendChatMessage(const std::wstring &message) const;
 	void sendChangePassword(const std::wstring &oldpassword,
-		const std::wstring &newpassword);
-	void sendDamage(u8 damage);
+		const std::wstring &newpassword) const;
+	void sendDamage(u8 damage) const;
 	
 	// locks envlock
 	void removeNode(const v3s16 &p);
@@ -202,11 +204,11 @@ public:
 	void updateCamera(const v3f &pos, const v3f &dir);
 	
 	// Returns InvalidPositionException if not found
-	MapNode getNode(const v3s16 &p);
+	MapNode getNode(const v3s16 &p) const;
 	// Wrapper to Map
-	NodeMetadata* getNodeMetadata(const v3s16 &p);
+	NodeMetadata* getNodeMetadata(const v3s16 &p) const;
 
-	v3f getPlayerPosition();
+	v3f getPlayerPosition() const;
 
 	void setPlayerControl(const PlayerControl &control);
 	
@@ -214,8 +216,9 @@ public:
 	// updated from the server. If it is true, it is set to false.
 	bool getLocalInventoryUpdated();
 	// Copies the inventory of the local player to parameter
-	void getLocalInventory(Inventory &dst);
+	void getLocalInventory(Inventory &dst) const;
 	
+	const InventoryContext *getInventoryContext() const;
 	InventoryContext *getInventoryContext();
 
 	Inventory* getInventory(InventoryContext *c, const std::string &id);
@@ -238,11 +241,11 @@ public:
 	);
 
 	// Prints a line or two of info
-	void printDebugInfo(std::ostream &os);
+	void printDebugInfo(std::ostream &os) const;
 
-	u32 getDayNightRatio();
+	u32 getDayNightRatio() const;
 
-	u16 getHP();
+	u16 getHP() const;
 
 	void setTempMod(const v3s16 &p, const NodeMod &mod);
 	void clearTempMod(const v3s16 &p);
@@ -274,7 +277,7 @@ public:
 				(std::wstring)L"<"+name+L"> "+message);
 	}
 
-	u64 getMapSeed(){ return m_map_seed; }
+	u64 getMapSeed() const { return m_map_seed; }
 
 	void addUpdateMeshTask(const v3s16 &blockpos, bool ack_to_server=false);
 	// Including blocks at appropriate edges
@@ -283,12 +286,12 @@ public:
 	// Get event from queue. CE_NONE is returned if queue is empty.
 	ClientEvent getClientEvent();
 	
-	inline bool accessDenied()
+	inline bool accessDenied() const
 	{
 		return m_access_denied;
 	}
 
-	inline std::wstring accessDeniedReason()
+	inline const std::wstring &accessDeniedReason() const
 	{
 		return m_access_denied_reason;
 	}
@@ -297,6 +300,11 @@ public:
 		This should only be used for calling the special drawing stuff in
 		ClientEnvironment
 	*/
+	const ClientEnvironment * getEnv() const
+	{
+		return &m_env;
+	}
+
 	ClientEnvironment * getEnv()
 	{
 		return &m_env;
@@ -311,9 +319,9 @@ private:
 	void ReceiveAll();
 	void Receive();
 	
-	void sendPlayerPos();
+	void sendPlayerPos() const;
 	// This sends the player's current name etc to the server
-	void sendPlayerInfo();
+	void sendPlayerInfo() const;
 	
 	float m_packetcounter_timer;
 	float m_connection_reinit_timer;
