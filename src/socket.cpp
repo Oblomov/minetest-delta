@@ -71,13 +71,13 @@ Address::Address(unsigned int a, unsigned int b,
 	m_port = port;
 }
 
-bool Address::operator==(Address &address)
+bool Address::operator==(Address &address) const
 {
 	return (m_address == address.m_address
 			&& m_port == address.m_port);
 }
 
-bool Address::operator!=(Address &address)
+bool Address::operator!=(Address &address) const
 {
 	return !(*this == address);
 }
@@ -201,7 +201,7 @@ void UDPSocket::Bind(unsigned short port)
     }
 }
 
-void UDPSocket::Send(const Address & destination, const void * data, int size)
+void UDPSocket::Send(const Address & destination, const void * data, int size) const
 {
 	bool dumping_packet = false;
 	if(INTERNET_SIMULATOR)
@@ -289,7 +289,7 @@ int UDPSocket::Receive(Address & sender, void * data, int size)
 	return received;
 }
 
-int UDPSocket::GetHandle()
+int UDPSocket::GetHandle() const
 {
 	return m_handle;
 }
@@ -299,7 +299,7 @@ void UDPSocket::setTimeoutMs(int timeout_ms)
 	m_timeout_ms = timeout_ms;
 }
 
-bool UDPSocket::WaitData(int timeout_ms)
+bool UDPSocket::WaitData(int timeout_ms) const
 {
 	fd_set readset;
 	int result;

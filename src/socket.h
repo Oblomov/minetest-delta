@@ -86,8 +86,8 @@ public:
 	Address(unsigned int a, unsigned int b,
 			unsigned int c, unsigned int d,
 			unsigned short port);
-	bool operator==(Address &address);
-	bool operator!=(Address &address);
+	bool operator==(Address &address) const;
+	bool operator!=(Address &address) const;
 	void Resolve(const char *name);
 	unsigned int getAddress() const;
 	unsigned short getPort() const;
@@ -110,13 +110,13 @@ public:
 	void Bind(unsigned short port);
 	//void Close();
 	//bool IsOpen();
-	void Send(const Address & destination, const void * data, int size);
+	void Send(const Address & destination, const void * data, int size) const;
 	// Returns -1 if there is no data
 	int Receive(Address & sender, void * data, int size);
-	int GetHandle(); // For debugging purposes only
+	int GetHandle() const; // For debugging purposes only
 	void setTimeoutMs(int timeout_ms);
 	// Returns true if there is data, false if timeout occurred
-	bool WaitData(int timeout_ms);
+	bool WaitData(int timeout_ms) const;
 private:
 	int m_handle;
 	int m_timeout_ms;
