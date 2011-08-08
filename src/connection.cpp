@@ -279,9 +279,9 @@ void ReliablePacketBuffer::resetTimedOuts(float timeout)
 	}
 }
 
-bool ReliablePacketBuffer::anyTotaltimeReached(float timeout)
+bool ReliablePacketBuffer::anyTotaltimeReached(float timeout) const
 {
-	core::list<BufferedPacket>::Iterator i;
+	core::list<BufferedPacket>::ConstIterator i;
 	i = m_list.begin();
 	for(; i != m_list.end(); i++){
 		if(i->totaltime >= timeout)
@@ -290,10 +290,10 @@ bool ReliablePacketBuffer::anyTotaltimeReached(float timeout)
 	return false;
 }
 
-core::list<BufferedPacket> ReliablePacketBuffer::getTimedOuts(float timeout)
+core::list<BufferedPacket> ReliablePacketBuffer::getTimedOuts(float timeout) const
 {
 	core::list<BufferedPacket> timed_outs;
-	core::list<BufferedPacket>::Iterator i;
+	core::list<BufferedPacket>::ConstIterator i;
 	i = m_list.begin();
 	for(; i != m_list.end(); i++)
 	{
@@ -559,7 +559,7 @@ void Connection::Disconnect()
 	}
 }
 
-bool Connection::Connected()
+bool Connection::Connected() const
 {
 	if(m_peers.size() != 1)
 		return false;
@@ -1105,10 +1105,12 @@ u32 Connection::Receive(u16 &peer_id, u8 *data, u32 datasize)
 	} // for
 }
 
-void Connection::SendToAll(u8 channelnum, SharedBuffer<u8> data, bool reliable)
+void Connection::SendToAll(u8 channelnum, SharedBuffer<u8> data, bool reliable) const
 {
+	// FIXME Irrlicht's core map should have a const iterator
 	core::map<u16, Peer*>::Iterator j;
-	j = m_peers.getIterator();
+	//j = m_peers.getIterator();
+	j = const_cast< core::map<u16, Peer*>* >(&m_peers)->getIterator();
 	for(; j.atEnd() == false; j++)
 	{
 		Peer *peer = j.getNode()->getValue();
@@ -1117,7 +1119,7 @@ void Connection::SendToAll(u8 channelnum, SharedBuffer<u8> data, bool reliable)
 }
 
 void Connection::Send(u16 peer_id, u8 channelnum,
-		SharedBuffer<u8> data, bool reliable)
+		SharedBuffer<u8> data, bool reliable) const
 {
 	assert(channelnum < CHANNEL_COUNT);
 	
@@ -1143,7 +1145,7 @@ void Connection::Send(u16 peer_id, u8 channelnum,
 }
 
 void Connection::SendAsPacket(u16 peer_id, u8 channelnum,
-		SharedBuffer<u8> data, bool reliable)
+		SharedBuffer<u8> data, bool reliable) const
 {
 	Peer *peer = GetPeer(peer_id);
 	Channel *channel = &(peer->channels[channelnum]);
@@ -1186,7 +1188,7 @@ void Connection::SendAsPacket(u16 peer_id, u8 channelnum,
 	}
 }
 
-void Connection::RawSend(const BufferedPacket &packet)
+void Connection::RawSend(const BufferedPacket &packet) const
 {
 	m_socket.Send(packet.address, *packet.data, packet.data.getSize());
 }
@@ -1307,7 +1309,7 @@ nextpeer:
 	}
 }
 
-Peer* Connection::GetPeer(u16 peer_id)
+Peer* Connection::GetPeer(u16 peer_id) const
 {
 	core::map<u16, Peer*>::Node *node = m_peers.find(peer_id);
 
@@ -1322,7 +1324,7 @@ Peer* Connection::GetPeer(u16 peer_id)
 	return node->getValue();
 }
 
-Peer* Connection::GetPeerNoEx(u16 peer_id)
+Peer* Connection::GetPeerNoEx(u16 peer_id) const
 {
 	core::map<u16, Peer*>::Node *node = m_peers.find(peer_id);
 
@@ -1336,11 +1338,13 @@ Peer* Connection::GetPeerNoEx(u16 peer_id)
 	return node->getValue();
 }
 
-core::list<Peer*> Connection::GetPeers()
+core::list<Peer*> Connection::GetPeers() const
 {
 	core::list<Peer*> list;
+	// FIXME Irrlicht's core map should have a const iterator
 	core::map<u16, Peer*>::Iterator j;
-	j = m_peers.getIterator();
+	//j = m_peers.getIterator();
+	j = const_cast< core::map<u16, Peer*>* >(&m_peers)->getIterator();
 	for(; j.atEnd() == false; j++)
 	{
 		Peer *peer = j.getNode()->getValue();
@@ -1359,7 +1363,7 @@ bool Connection::deletePeer(u16 peer_id, bool timeout)
 	return true;
 }
 
-void Connection::PrintInfo(std::ostream &out)
+void Connection::PrintInfo(std::ostream &out) const
 {
 	out<<m_socket.GetHandle();
 	out<<" ";
@@ -1368,7 +1372,7 @@ void Connection::PrintInfo(std::ostream &out)
 		out<<"  ";
 }
 
-void Connection::PrintInfo()
+void Connection::PrintInfo() const
 {
 	PrintInfo(dout_con);
 }

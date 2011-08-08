@@ -285,8 +285,8 @@ public:
 	void insert(BufferedPacket &p);
 	void incrementTimeouts(float dtime);
 	void resetTimedOuts(float timeout);
-	bool anyTotaltimeReached(float timeout);
-	core::list<BufferedPacket> getTimedOuts(float timeout);
+	bool anyTotaltimeReached(float timeout) const;
+	core::list<BufferedPacket> getTimedOuts(float timeout) const;
 
 private:
 	core::list<BufferedPacket> m_list;
@@ -430,7 +430,7 @@ public:
 	void Serve(unsigned short port);
 	// Connect to a server
 	void Connect(Address address);
-	bool Connected();
+	bool Connected() const;
 
 	void Disconnect();
 
@@ -444,35 +444,35 @@ public:
 	u32 Receive(u16 &peer_id, u8 *data, u32 datasize);
 	
 	// These will automatically package the data as an original or split
-	void SendToAll(u8 channelnum, SharedBuffer<u8> data, bool reliable);
-	void Send(u16 peer_id, u8 channelnum, SharedBuffer<u8> data, bool reliable);
+	void SendToAll(u8 channelnum, SharedBuffer<u8> data, bool reliable) const;
+	void Send(u16 peer_id, u8 channelnum, SharedBuffer<u8> data, bool reliable) const;
 	// Send data as a packet; it will be wrapped in base header and
 	// optionally to a reliable packet.
 	void SendAsPacket(u16 peer_id, u8 channelnum,
-			SharedBuffer<u8> data, bool reliable);
+			SharedBuffer<u8> data, bool reliable) const;
 	// Sends a raw packet
-	void RawSend(const BufferedPacket &packet);
+	void RawSend(const BufferedPacket &packet) const;
 	
 	// May call PeerHandler methods
 	void RunTimeouts(float dtime);
 
 	// Can throw a PeerNotFoundException
-	Peer* GetPeer(u16 peer_id);
+	Peer* GetPeer(u16 peer_id) const;
 	// returns NULL if failed
-	Peer* GetPeerNoEx(u16 peer_id);
-	core::list<Peer*> GetPeers();
+	Peer* GetPeerNoEx(u16 peer_id) const;
+	core::list<Peer*> GetPeers() const;
 	
 	// Calls PeerHandler::deletingPeer
 	// Returns false if peer was not found
 	bool deletePeer(u16 peer_id, bool timeout);
 
 	void SetPeerID(u16 id){ m_peer_id = id; }
-	u16 GetPeerID(){ return m_peer_id; }
-	u32 GetProtocolID(){ return m_protocol_id; }
+	u16 GetPeerID() const { return m_peer_id; }
+	u32 GetProtocolID() const { return m_protocol_id; }
 
 	// For debug printing
-	void PrintInfo(std::ostream &out);
-	void PrintInfo();
+	void PrintInfo(std::ostream &out) const;
+	void PrintInfo() const;
 	u16 m_indentation;
 
 private:
