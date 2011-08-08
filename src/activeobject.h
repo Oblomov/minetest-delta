@@ -50,7 +50,7 @@ public:
 	{
 	}
 	
-	u16 getId()
+	u16 getId() const
 	{
 		return m_id;
 	}
