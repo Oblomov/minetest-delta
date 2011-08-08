@@ -85,7 +85,7 @@ void Map::dispatchEvent(MapEditEvent *event)
 	}
 }
 
-MapSector * Map::getSectorNoGenerateNoExNoLock(const v2s16 &p)
+MapSector * Map::getSectorNoGenerateNoExNoLock(const v2s16 &p) const
 {
 	if(m_sector_cache != NULL && p == m_sector_cache_p){
 		MapSector * sector = m_sector_cache;
@@ -106,12 +106,12 @@ MapSector * Map::getSectorNoGenerateNoExNoLock(const v2s16 &p)
 	return sector;
 }
 
-MapSector * Map::getSectorNoGenerateNoEx(const v2s16 &p)
+MapSector * Map::getSectorNoGenerateNoEx(const v2s16 &p) const
 {
 	return getSectorNoGenerateNoExNoLock(p);
 }
 
-MapSector * Map::getSectorNoGenerate(const v2s16 &p)
+MapSector * Map::getSectorNoGenerate(const v2s16 &p) const
 {
 	MapSector *sector = getSectorNoGenerateNoEx(p);
 	if(sector == NULL)
@@ -120,7 +120,7 @@ MapSector * Map::getSectorNoGenerate(const v2s16 &p)
 	return sector;
 }
 
-MapBlock * Map::getBlockNoCreateNoEx(const v3s16 &p3d)
+MapBlock * Map::getBlockNoCreateNoEx(const v3s16 &p3d) const
 {
 	v2s16 p2d(p3d.X, p3d.Z);
 	MapSector * sector = getSectorNoGenerateNoEx(p2d);
@@ -130,7 +130,7 @@ MapBlock * Map::getBlockNoCreateNoEx(const v3s16 &p3d)
 	return block;
 }
 
-MapBlock * Map::getBlockNoCreate(const v3s16 &p3d)
+MapBlock * Map::getBlockNoCreate(const v3s16 &p3d) const
 {	
 	MapBlock *block = getBlockNoCreateNoEx(p3d);
 	if(block == NULL)
@@ -138,7 +138,7 @@ MapBlock * Map::getBlockNoCreate(const v3s16 &p3d)
 	return block;
 }
 
-bool Map::isNodeUnderground(const v3s16 &p)
+bool Map::isNodeUnderground(const v3s16 &p) const
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	try{
@@ -151,7 +151,7 @@ bool Map::isNodeUnderground(const v3s16 &p)
 	}
 }
 
-bool Map::isValidPosition(const v3s16 &p)
+bool Map::isValidPosition(const v3s16 &p)  const
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreate(blockpos);
@@ -159,7 +159,7 @@ bool Map::isValidPosition(const v3s16 &p)
 }
 
 // Returns a CONTENT_IGNORE node if not found
-MapNode Map::getNodeNoEx(const v3s16 &p)
+MapNode Map::getNodeNoEx(const v3s16 &p) const
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
@@ -170,7 +170,7 @@ MapNode Map::getNodeNoEx(const v3s16 &p)
 }
 
 // throws InvalidPositionException if not found
-MapNode Map::getNode(const v3s16 &p)
+MapNode Map::getNode(const v3s16 &p) const
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	MapBlock *block = getBlockNoCreateNoEx(blockpos);
@@ -551,7 +551,7 @@ void Map::lightNeighbors(enum LightBank bank,
 	spreadLight(bank, from_nodes, modified_blocks);
 }
 
-v3s16 Map::getBrightestNeighbour(enum LightBank bank, const v3s16 &p)
+v3s16 Map::getBrightestNeighbour(enum LightBank bank, const v3s16 &p) const
 {
 	v3s16 dirs[6] = {
 		v3s16(0,0,1), // back
@@ -1328,7 +1328,7 @@ bool Map::removeNodeWithEvent(const v3s16 &p)
 	return succeeded;
 }
 
-bool Map::dayNightDiffed(const v3s16 &blockpos)
+bool Map::dayNightDiffed(const v3s16 &blockpos) const
 {
 	try{
 		v3s16 p = blockpos + v3s16(0,0,0);
@@ -1533,7 +1533,7 @@ void Map::unloadUnusedData(float timeout,
 }
 #endif
 
-void Map::PrintInfo(std::ostream &out)
+void Map::PrintInfo(std::ostream &out) const
 {
 	out<<"Map: ";
 }
@@ -1789,7 +1789,7 @@ void Map::transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks)
 	//dstream<<"Map::transformLiquids(): loopcount="<<loopcount<<std::endl;
 }
 
-NodeMetadata* Map::getNodeMetadata(const v3s16 &p)
+NodeMetadata* Map::getNodeMetadata(const v3s16 &p) const
 {
 	v3s16 blockpos = getNodeBlockPos(p);
 	v3s16 p_rel = p - blockpos*MAP_BLOCKSIZE;
@@ -2754,7 +2754,7 @@ plan_b:
 	//return (s16)level;
 }
 
-void ServerMap::createDirs(const std::string &path)
+void ServerMap::createDirs(const std::string &path) const
 {
 	if(fs::CreateAllDirs(path) == false)
 	{
@@ -2764,7 +2764,7 @@ void ServerMap::createDirs(const std::string &path)
 	}
 }
 
-std::string ServerMap::getSectorDir(const v2s16 &pos, int layout)
+std::string ServerMap::getSectorDir(const v2s16 &pos, int layout) const
 {
 	char cc[9];
 	switch(layout)
@@ -2786,7 +2786,7 @@ std::string ServerMap::getSectorDir(const v2s16 &pos, int layout)
 	}
 }
 
-v2s16 ServerMap::getSectorPos(const std::string &dirname)
+v2s16 ServerMap::getSectorPos(const std::string &dirname) const
 {
 	unsigned int x, y;
 	int r;
@@ -2814,7 +2814,8 @@ v2s16 ServerMap::getSectorPos(const std::string &dirname)
 	return pos;
 }
 
-v3s16 ServerMap::getBlockPos(const std::string &sectordir, const std::string &blockfile)
+v3s16 ServerMap::getBlockPos(const std::string &sectordir,
+		const std::string &blockfile) const
 {
 	v2s16 p2d = getSectorPos(sectordir);
 
@@ -3334,7 +3335,7 @@ MapBlock* ServerMap::loadBlock(const v3s16 &blockpos)
 	return getBlockNoCreateNoEx(blockpos);
 }
 
-void ServerMap::PrintInfo(std::ostream &out)
+void ServerMap::PrintInfo(std::ostream &out) const
 {
 	out<<"ServerMap: ";
 }
@@ -3877,7 +3878,7 @@ void ClientMap::updateNodeMeshes(const v3s16 &nodepos, u32 daynight_ratio)
 }
 #endif
 
-void ClientMap::PrintInfo(std::ostream &out)
+void ClientMap::PrintInfo(std::ostream &out) const
 {
 	out<<"ClientMap: ";
 }

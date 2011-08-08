@@ -131,11 +131,11 @@ public:
 	void dispatchEvent(MapEditEvent *event);
 
 	// On failure returns NULL
-	MapSector * getSectorNoGenerateNoExNoLock(const v2s16 &p2d);
+	MapSector * getSectorNoGenerateNoExNoLock(const v2s16 &p2d) const;
 	// Same as the above (there exists no lock anymore)
-	MapSector * getSectorNoGenerateNoEx(const v2s16 &p2d);
+	MapSector * getSectorNoGenerateNoEx(const v2s16 &p2d) const;
 	// On failure throws InvalidPositionException
-	MapSector * getSectorNoGenerate(const v2s16 &p2d);
+	MapSector * getSectorNoGenerate(const v2s16 &p2d) const;
 	// Gets an existing sector or creates an empty one
 	//MapSector * getSectorCreate(v2s16 p2d);
 
@@ -148,23 +148,23 @@ public:
 			core::map<v3s16, MapBlock*> &changed_blocks){ return NULL; }
 
 	// Returns InvalidPositionException if not found
-	MapBlock * getBlockNoCreate(const v3s16 &p);
+	MapBlock * getBlockNoCreate(const v3s16 &p) const;
 	// Returns NULL if not found
-	MapBlock * getBlockNoCreateNoEx(const v3s16 &p);
+	MapBlock * getBlockNoCreateNoEx(const v3s16 &p) const;
 	
 	// Returns InvalidPositionException if not found
-	bool isNodeUnderground(const v3s16 &p);
+	bool isNodeUnderground(const v3s16 &p) const;
 	
-	bool isValidPosition(const v3s16 &p);
+	bool isValidPosition(const v3s16 &p) const;
 	
 	// throws InvalidPositionException if not found
-	MapNode getNode(const v3s16 &p);
+	MapNode getNode(const v3s16 &p) const;
 
 	// throws InvalidPositionException if not found
 	void setNode(const v3s16 &p, const MapNode & n);
 	
 	// Returns a CONTENT_IGNORE node if not found
-	MapNode getNodeNoEx(const v3s16 &p);
+	MapNode getNodeNoEx(const v3s16 &p) const;
 
 	void unspreadLight(enum LightBank bank,
 			core::map<v3s16, u8> & from_nodes,
@@ -184,7 +184,7 @@ public:
 			const v3s16 &pos,
 			core::map<v3s16, MapBlock*> & modified_blocks);
 
-	v3s16 getBrightestNeighbour(enum LightBank bank, const v3s16 &p);
+	v3s16 getBrightestNeighbour(enum LightBank bank, const v3s16 &p) const;
 
 	s16 propagateSunlight(const v3s16 &start,
 			core::map<v3s16, MapBlock*> & modified_blocks);
@@ -215,17 +215,17 @@ public:
 	/*
 		Takes the blocks at the edges into account
 	*/
-	bool dayNightDiffed(const v3s16 &blockpos);
+	bool dayNightDiffed(const v3s16 &blockpos) const;
 
 	//core::aabbox3d<s16> getDisplayedBlockArea();
 
 	//bool updateChangedVisibleArea();
 	
-	virtual void save(bool only_changed){assert(0);};
+	virtual void save(bool only_changed) {assert(0);};
 	
 	// Server implements this.
 	// Client leaves it as no-op.
-	virtual void saveBlock(MapBlock *block){};
+	virtual void saveBlock(MapBlock *block) {};
 
 	/*
 		Updates usage timers and unloads unused blocks and sectors.
@@ -250,7 +250,7 @@ public:
 #endif
 
 	// For debug printing. Prints "Map: ", "ServerMap: " or "ClientMap: "
-	virtual void PrintInfo(std::ostream &out);
+	virtual void PrintInfo(std::ostream &out) const;
 	
 	void transformLiquids(core::map<v3s16, MapBlock*> & modified_blocks);
 
@@ -259,7 +259,7 @@ public:
 		These are basically coordinate wrappers to MapBlock
 	*/
 	
-	NodeMetadata* getNodeMetadata(const v3s16 &p);
+	NodeMetadata* getNodeMetadata(const v3s16 &p) const;
 	void setNodeMetadata(const v3s16 &p, NodeMetadata *meta);
 	void removeNodeMetadata(const v3s16 &p);
 	void nodeMetadataStep(float dtime,
@@ -283,8 +283,8 @@ protected:
 	core::map<v2s16, MapSector*> m_sectors;
 
 	// Be sure to set this to NULL when the cached sector is deleted 
-	MapSector *m_sector_cache;
-	v2s16 m_sector_cache_p;
+	mutable MapSector *m_sector_cache;
+	mutable v2s16 m_sector_cache_p;
 
 	// Queued transforming water nodes
 	UniqueQueue<v3s16> m_transforming_liquid;
@@ -353,12 +353,13 @@ public:
 		Misc. helper functions for fiddling with directory and file
 		names when saving
 	*/
-	void createDirs(const std::string &path);
+	void createDirs(const std::string &path) const;
 	// returns something like "map/sectors/xxxxxxxx"
-	std::string getSectorDir(const v2s16 &pos, int layout = 2);
+	std::string getSectorDir(const v2s16 &pos, int layout = 2) const;
 	// dirname: final directory name
-	v2s16 getSectorPos(const std::string &dirname);
-	v3s16 getBlockPos(const std::string &sectordir, const std::string &blockfile);
+	v2s16 getSectorPos(const std::string &dirname) const;
+	v3s16 getBlockPos(const std::string &sectordir,
+			const std::string &blockfile) const;
 	static std::string getBlockFilename(const v3s16 &p);
 
 	void save(bool only_changed);
@@ -394,11 +395,11 @@ public:
 	MapBlock* loadBlock(const v3s16 &p);
 
 	// For debug printing
-	virtual void PrintInfo(std::ostream &out);
+	virtual void PrintInfo(std::ostream &out) const;
 
-	bool isSavingEnabled(){ return m_map_saving_enabled; }
+	bool isSavingEnabled() const { return m_map_saving_enabled; }
 
-	u64 getSeed(){ return m_seed; }
+	u64 getSeed() const { return m_seed; }
 
 private:
 	// Seed used for all kinds of randomness
@@ -546,10 +547,10 @@ public:
 	//void updateNodeMeshes(v3s16 nodepos, u32 daynight_ratio);
 
 	// For debug printing
-	virtual void PrintInfo(std::ostream &out);
+	virtual void PrintInfo(std::ostream &out) const;
 	
 	// Check if sector was drawn on last render()
-	bool sectorWasDrawn(const v2s16 &p)
+	bool sectorWasDrawn(const v2s16 &p) const
 	{
 		return (m_last_drawn_sectors.find(p) != NULL);
 	}
