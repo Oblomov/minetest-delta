@@ -36,7 +36,7 @@ struct StaticObject
 		pos(0,0,0)
 	{
 	}
-	StaticObject(u8 type_, v3f pos_, const std::string &data_):
+	StaticObject(u8 type_, const v3f &pos_, const std::string &data_):
 		type(type_),
 		pos(pos_),
 		data(data_)
