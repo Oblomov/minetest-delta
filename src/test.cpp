@@ -393,7 +393,7 @@ struct TestMapBlock
 			position_valid = true;
 		}
 
-		virtual bool isValidPosition(v3s16 p)
+		virtual bool isValidPosition(const v3s16 &p)
 		{
 			//return position_valid ^ (p==position_valid_exception);
 			bool exception = false;
@@ -409,14 +409,14 @@ struct TestMapBlock
 			return exception ? !position_valid : position_valid;
 		}
 
-		virtual MapNode getNode(v3s16 p)
+		virtual MapNode getNode(const v3s16 &p)
 		{
 			if(isValidPosition(p) == false)
 				throw InvalidPositionException();
 			return node;
 		}
 
-		virtual void setNode(v3s16 p, MapNode & n)
+		virtual void setNode(const v3s16 &p, const MapNode & n)
 		{
 			if(isValidPosition(p) == false)
 				throw InvalidPositionException();
@@ -648,19 +648,19 @@ struct TestMapSector
 			position_valid = true;
 		}
 
-		virtual bool isValidPosition(v3s16 p)
+		virtual bool isValidPosition(const v3s16 &p)
 		{
 			return position_valid;
 		}
 
-		virtual MapNode getNode(v3s16 p)
+		virtual MapNode getNode(const v3s16 &p)
 		{
 			if(position_valid == false)
 				throw InvalidPositionException();
 			return node;
 		}
 
-		virtual void setNode(v3s16 p, MapNode & n)
+		virtual void setNode(const v3s16 &p, const MapNode & n)
 		{
 			if(position_valid == false)
 				throw InvalidPositionException();
