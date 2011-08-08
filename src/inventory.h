@@ -49,31 +49,32 @@ public:
 	
 	virtual const char* getName() const = 0;
 	// Shall write the name and the parameters
-	virtual void serialize(std::ostream &os) = 0;
+	virtual void serialize(std::ostream &os) const = 0;
 	// Shall make an exact clone of the item
-	virtual InventoryItem* clone() = 0;
+	virtual InventoryItem* clone() const = 0;
 #ifndef SERVER
 	// Shall return an image to show in the GUI (or NULL)
-	virtual video::ITexture * getImage() { return NULL; }
+	virtual video::ITexture * getImage() const { return NULL; }
 #endif
 	// Shall return a text to show in the GUI
-	virtual std::string getText() { return ""; }
+	virtual std::string getText() const { return ""; }
 	// Creates an object from the item, to be placed in the world.
-	virtual ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, const v3f &pos);
+	virtual ServerActiveObject* createSAO(ServerEnvironment *env, u16 id,
+			const v3f &pos) const;
 	// Gets amount of items that dropping one SAO will decrement
-	virtual u16 getDropCount(){ return getCount(); }
+	virtual u16 getDropCount() const { return getCount(); }
 
 	/*
 		Quantity methods
 	*/
 
 	// Shall return true if the item can be add()ed to the other
-	virtual bool addableTo(InventoryItem *other)
+	virtual bool addableTo(InventoryItem *other) const
 	{
 		return false;
 	}
 	
-	u16 getCount()
+	u16 getCount() const
 	{
 		return m_count;
 	}
@@ -82,7 +83,7 @@ public:
 		m_count = count;
 	}
 	// This should return something else for stackable items
-	virtual u16 freeSpace()
+	virtual u16 freeSpace() const
 	{
 		return 0;
 	}
@@ -102,11 +103,11 @@ public:
 	*/
 
 	// Whether it can be cooked
-	virtual bool isCookable(){return false;}
+	virtual bool isCookable() const {return false;}
 	// Time of cooking
-	virtual float getCookTime(){return 3.0;}
+	virtual float getCookTime() const {return 3.0;}
 	// Result of cooking (can randomize)
-	virtual InventoryItem *createCookResult(){return NULL;}
+	virtual InventoryItem *createCookResult() const {return NULL;}
 	
 	// Eat, press, activate, whatever.
 	// Called when item is right-clicked when lying on ground.
@@ -133,7 +134,7 @@ public:
 	{
 		return "MaterialItem";
 	}
-	virtual void serialize(std::ostream &os)
+	virtual void serialize(std::ostream &os) const
 	{
 		//os.imbue(std::locale("C"));
 		os<<"MaterialItem2";
@@ -142,25 +143,25 @@ public:
 		os<<" ";
 		os<<m_count;
 	}
-	virtual InventoryItem* clone()
+	virtual InventoryItem* clone() const
 	{
 		return new MaterialItem(m_content, m_count);
 	}
 #ifndef SERVER
-	video::ITexture * getImage()
+	video::ITexture * getImage() const
 	{
 		return content_features(m_content).inventory_texture;
 		return NULL;
 	}
 #endif
-	std::string getText()
+	std::string getText() const
 	{
 		std::ostringstream os;
 		os<<m_count;
 		return os.str();
 	}
 
-	virtual bool addableTo(InventoryItem *other)
+	virtual bool addableTo(InventoryItem *other) const
 	{
 		if(std::string(other->getName()) != "MaterialItem")
 			return false;
@@ -169,7 +170,7 @@ public:
 			return false;
 		return true;
 	}
-	u16 freeSpace()
+	u16 freeSpace() const
 	{
 		if(m_count > QUANTITY_ITEM_MAX_COUNT)
 			return 0;
@@ -178,12 +179,12 @@ public:
 	/*
 		Other properties
 	*/
-	bool isCookable();
-	InventoryItem *createCookResult();
+	bool isCookable() const;
+	InventoryItem *createCookResult() const;
 	/*
 		Special methods
 	*/
-	content_t getMaterial()
+	content_t getMaterial() const
 	{
 		return m_content;
 	}
@@ -208,40 +209,35 @@ public:
 	{
 		return "MBOItem";
 	}
-	virtual void serialize(std::ostream &os)
+	virtual void serialize(std::ostream &os) const
 	{
-		for(;;)
-		{
-			size_t t = m_inventorystring.find('|');
-			if(t == std::string::npos)
-				break;
-			m_inventorystring[t] = '?';
-		}
+		std::string sane_string(m_inventorystring);
+		str_replace_char(sane_string, '|', '?');
 		os<<getName();
 		os<<" ";
 		os<<m_inventorystring;
 		os<<"|";
 	}
-	virtual InventoryItem* clone()
+	virtual InventoryItem* clone() const
 	{
 		return new MapBlockObjectItem(m_inventorystring);
 	}
 
 #ifndef SERVER
-	video::ITexture * getImage();
+	video::ITexture * getImage() const;
 #endif
-	std::string getText();
+	std::string getText() const;
 
 	/*
 		Special methods
 	*/
-	std::string getInventoryString()
+	std::string getInventoryString() const
 	{
 		return m_inventorystring;
 	}
 
 	MapBlockObject * createObject(const v3f &pos,
-			f32 player_yaw, f32 player_pitch);
+			f32 player_yaw, f32 player_pitch) const;
 
 private:
 	std::string m_inventorystring;
@@ -267,7 +263,7 @@ public:
 	{
 		return "CraftItem";
 	}
-	virtual void serialize(std::ostream &os)
+	virtual void serialize(std::ostream &os) const
 	{
 		os<<getName();
 		os<<" ";
@@ -275,14 +271,14 @@ public:
 		os<<" ";
 		os<<m_count;
 	}
-	virtual InventoryItem* clone()
+	virtual InventoryItem* clone() const
 	{
 		return new CraftItem(m_subname, m_count);
 	}
 #ifndef SERVER
-	video::ITexture * getImage();
+	video::ITexture * getImage() const;
 #endif
-	std::string getText()
+	std::string getText() const
 	{
 		std::ostringstream os;
 		os<<m_count;
@@ -290,10 +286,10 @@ public:
 	}
 
 	ServerActiveObject* createSAO(ServerEnvironment *env, u16 id,
-			const v3f &pos);
-	u16 getDropCount();
+			const v3f &pos) const;
+	u16 getDropCount() const;
 
-	virtual bool addableTo(InventoryItem *other)
+	virtual bool addableTo(InventoryItem *other) const
 	{
 		if(std::string(other->getName()) != "CraftItem")
 			return false;
@@ -302,7 +298,7 @@ public:
 			return false;
 		return true;
 	}
-	u16 freeSpace()
+	u16 freeSpace() const
 	{
 		if(m_count > QUANTITY_ITEM_MAX_COUNT)
 			return 0;
@@ -313,15 +309,15 @@ public:
 		Other properties
 	*/
 
-	bool isCookable();
-	InventoryItem *createCookResult();
+	bool isCookable() const;
+	InventoryItem *createCookResult() const;
 
 	bool use(ServerEnvironment *env, Player *player);
 	
 	/*
 		Special methods
 	*/
-	std::string getSubName()
+	std::string getSubName() const
 	{
 		return m_subname;
 	}
@@ -345,7 +341,7 @@ public:
 	{
 		return "ToolItem";
 	}
-	virtual void serialize(std::ostream &os)
+	virtual void serialize(std::ostream &os) const
 	{
 		os<<getName();
 		os<<" ";
@@ -353,12 +349,12 @@ public:
 		os<<" ";
 		os<<m_wear;
 	}
-	virtual InventoryItem* clone()
+	virtual InventoryItem* clone() const
 	{
 		return new ToolItem(m_toolname, m_wear);
 	}
 #ifndef SERVER
-	video::ITexture * getImage()
+	video::ITexture * getImage() const
 	{
 		if(g_texturesource == NULL)
 			return NULL;
@@ -407,7 +403,7 @@ public:
 		return g_texturesource->getTextureRaw(os.str());
 	}
 #endif
-	std::string getText()
+	std::string getText() const
 	{
 		return "";
 		
@@ -430,11 +426,11 @@ public:
 	/*
 		Special methods
 	*/
-	std::string getToolName()
+	const std::string &getToolName() const
 	{
 		return m_toolname;
 	}
-	u16 getWear()
+	u16 getWear() const
 	{
 		return m_wear;
 	}
@@ -463,23 +459,23 @@ public:
 	InventoryList(const std::string &name, u32 size);
 	~InventoryList();
 	void clearItems();
-	void serialize(std::ostream &os);
+	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 
 	InventoryList(const InventoryList &other);
 	InventoryList & operator = (const InventoryList &other);
 
-	std::string getName();
-	u32 getSize();
+	std::string getName() const;
+	u32 getSize() const;
 	// Count used slots
-	u32 getUsedSlots();
-	u32 getFreeSlots();
+	u32 getUsedSlots() const;
+	u32 getFreeSlots() const;
 
 	/*bool getDirty(){ return m_dirty; }
 	void setDirty(bool dirty=true){ m_dirty = dirty; }*/
 	
 	// Get pointer to item
-	InventoryItem * getItem(u32 i);
+	InventoryItem * getItem(u32 i) const;
 	// Returns old item (or NULL). Parameter can be NULL.
 	InventoryItem * changeItem(u32 i, InventoryItem *newitem);
 	// Delete item
@@ -496,7 +492,7 @@ public:
 	InventoryItem * addItem(u32 i, InventoryItem *newitem);
 
 	// Checks whether the item could be added to the given slot
-	bool itemFits(u32 i, InventoryItem *newitem);
+	bool itemFits(u32 i, InventoryItem *newitem) const;
 
 	// Takes some items from a slot.
 	// If there are not enough, takes as many as it can.
@@ -506,7 +502,7 @@ public:
 	// Decrements amount of every material item
 	void decrementMaterials(u16 count);
 
-	void print(std::ostream &o);
+	void print(std::ostream &o) const;
 	
 private:
 	core::array<InventoryItem*> m_items;
@@ -526,11 +522,11 @@ public:
 	Inventory(const Inventory &other);
 	Inventory & operator = (const Inventory &other);
 	
-	void serialize(std::ostream &os);
+	void serialize(std::ostream &os) const;
 	void deSerialize(std::istream &is);
 
 	InventoryList * addList(const std::string &name, u32 size);
-	InventoryList * getList(const std::string &name);
+	InventoryList * getList(const std::string &name) const;
 	bool deleteList(const std::string &name);
 	// A shorthand for adding items.
 	// Returns NULL if the item was fully added, leftover otherwise.
@@ -544,7 +540,7 @@ public:
 	
 private:
 	// -1 if not found
-	s32 getListIndex(const std::string &name);
+	s32 getListIndex(const std::string &name) const;
 
 	core::array<InventoryList*> m_lists;
 };
@@ -574,7 +570,8 @@ public:
 		- "current_player"
 		- "nodemeta:X,Y,Z"
 	*/
-	virtual Inventory* getInventory(InventoryContext *c, const std::string &id)
+	virtual Inventory* getInventory(InventoryContext *c,
+			const std::string &id) const
 		{return NULL;}
 	// Used on the server by InventoryAction::apply and other stuff
 	virtual void inventoryModified(InventoryContext *c, const std::string &id)
@@ -591,7 +588,7 @@ struct InventoryAction
 	static InventoryAction * deSerialize(std::istream &is);
 	
 	virtual u16 getType() const = 0;
-	virtual void serialize(std::ostream &os) = 0;
+	virtual void serialize(std::ostream &os) const = 0;
 	virtual void apply(InventoryContext *c, InventoryManager *mgr) = 0;
 };
 
@@ -639,7 +636,7 @@ struct IMoveAction : public InventoryAction
 		return IACTION_MOVE;
 	}
 
-	void serialize(std::ostream &os)
+	void serialize(std::ostream &os) const
 	{
 		os<<"Move ";
 		os<<count<<" ";
@@ -691,7 +688,7 @@ struct ItemSpec
 	{
 	}
 
-	bool checkItem(InventoryItem *item);
+	bool checkItem(InventoryItem *item) const;
 };
 
 /*

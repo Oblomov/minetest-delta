@@ -123,7 +123,7 @@ InventoryItem* InventoryItem::deSerialize(std::istream &is)
 }
 
 ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id,
-		const v3f &pos)
+		const v3f &pos) const
 {
 	/*
 		Create an ItemSAO
@@ -140,12 +140,12 @@ ServerActiveObject* InventoryItem::createSAO(ServerEnvironment *env, u16 id,
 	MaterialItem
 */
 
-bool MaterialItem::isCookable()
+bool MaterialItem::isCookable() const
 {
 	return item_material_is_cookable(m_content);
 }
 
-InventoryItem *MaterialItem::createCookResult()
+InventoryItem *MaterialItem::createCookResult() const
 {
 	return item_material_create_cook_result(m_content);
 }
@@ -155,7 +155,7 @@ InventoryItem *MaterialItem::createCookResult()
 */
 
 #ifndef SERVER
-video::ITexture * CraftItem::getImage()
+video::ITexture * CraftItem::getImage() const
 {
 	if(g_texturesource == NULL)
 		return NULL;
@@ -167,7 +167,8 @@ video::ITexture * CraftItem::getImage()
 }
 #endif
 
-ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, u16 id, const v3f &pos)
+ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, u16 id,
+		const v3f &pos) const
 {
 	// Special cases
 	ServerActiveObject *obj = item_craft_create_object(m_subname, env, id, pos);
@@ -177,7 +178,7 @@ ServerActiveObject* CraftItem::createSAO(ServerEnvironment *env, u16 id, const v
 	return InventoryItem::createSAO(env, id, pos);
 }
 
-u16 CraftItem::getDropCount()
+u16 CraftItem::getDropCount() const
 {
 	// Special cases
 	s16 dc = item_craft_get_drop_count(m_subname);
@@ -187,12 +188,12 @@ u16 CraftItem::getDropCount()
 	return InventoryItem::getDropCount();
 }
 
-bool CraftItem::isCookable()
+bool CraftItem::isCookable() const
 {
 	return item_craft_is_cookable(m_subname);
 }
 
-InventoryItem *CraftItem::createCookResult()
+InventoryItem *CraftItem::createCookResult() const
 {
 	return item_craft_create_cook_result(m_subname);
 }
@@ -216,7 +217,7 @@ bool CraftItem::use(ServerEnvironment *env, Player *player)
 	TODO: Remove
 */
 #ifndef SERVER
-video::ITexture * MapBlockObjectItem::getImage()
+video::ITexture * MapBlockObjectItem::getImage() const
 {
 	if(m_inventorystring.substr(0,3) == "Rat")
 		return g_texturesource->getTextureRaw("rat.png");
@@ -227,7 +228,7 @@ video::ITexture * MapBlockObjectItem::getImage()
 	return NULL;
 }
 #endif
-std::string MapBlockObjectItem::getText()
+std::string MapBlockObjectItem::getText() const
 {
 	if(m_inventorystring.substr(0,3) == "Rat")
 		return "";
@@ -239,7 +240,7 @@ std::string MapBlockObjectItem::getText()
 }
 
 MapBlockObject * MapBlockObjectItem::createObject
-		(const v3f &pos, f32 player_yaw, f32 player_pitch)
+		(const v3f &pos, f32 player_yaw, f32 player_pitch) const
 {
 	std::istringstream is(m_inventorystring);
 	std::string name;
@@ -321,7 +322,7 @@ void InventoryList::clearItems()
 	//setDirty(true);
 }
 
-void InventoryList::serialize(std::ostream &os)
+void InventoryList::serialize(std::ostream &os) const
 {
 	//os.imbue(std::locale("C"));
 	
@@ -417,17 +418,17 @@ InventoryList & InventoryList::operator = (const InventoryList &other)
 	return *this;
 }
 
-std::string InventoryList::getName()
+std::string InventoryList::getName() const
 {
 	return m_name;
 }
 
-u32 InventoryList::getSize()
+u32 InventoryList::getSize() const
 {
 	return m_items.size();
 }
 
-u32 InventoryList::getUsedSlots()
+u32 InventoryList::getUsedSlots() const
 {
 	u32 num = 0;
 	for(u32 i=0; i<m_items.size(); i++)
@@ -439,12 +440,12 @@ u32 InventoryList::getUsedSlots()
 	return num;
 }
 
-u32 InventoryList::getFreeSlots()
+u32 InventoryList::getFreeSlots() const
 {
 	return getSize() - getUsedSlots();
 }
 
-InventoryItem * InventoryList::getItem(u32 i)
+InventoryItem * InventoryList::getItem(u32 i) const
 {
 	if(i > m_items.size() - 1)
 		return NULL;
@@ -543,7 +544,7 @@ InventoryItem * InventoryList::addItem(u32 i, InventoryItem *newitem)
 	}
 }
 
-bool InventoryList::itemFits(u32 i, InventoryItem *newitem)
+bool InventoryList::itemFits(u32 i, InventoryItem *newitem) const
 {
 	// If it is an empty position, it's an easy job.
 	InventoryItem *to_item = getItem(i);
@@ -603,7 +604,7 @@ void InventoryList::decrementMaterials(u16 count)
 	}
 }
 
-void InventoryList::print(std::ostream &o)
+void InventoryList::print(std::ostream &o) const
 {
 	o<<"InventoryList:"<<std::endl;
 	for(u32 i=0; i<m_items.size(); i++)
@@ -655,7 +656,7 @@ Inventory & Inventory::operator = (const Inventory &other)
 	return *this;
 }
 
-void Inventory::serialize(std::ostream &os)
+void Inventory::serialize(std::ostream &os) const
 {
 	for(u32 i=0; i<m_lists.size(); i++)
 	{
@@ -729,7 +730,7 @@ InventoryList * Inventory::addList(const std::string &name, u32 size)
 	}
 }
 
-InventoryList * Inventory::getList(const std::string &name)
+InventoryList * Inventory::getList(const std::string &name) const
 {
 	s32 i = getListIndex(name);
 	if(i == -1)
@@ -737,7 +738,7 @@ InventoryList * Inventory::getList(const std::string &name)
 	return m_lists[i];
 }
 
-s32 Inventory::getListIndex(const std::string &name)
+s32 Inventory::getListIndex(const std::string &name) const
 {
 	for(u32 i=0; i<m_lists.size(); i++)
 	{
@@ -867,7 +868,7 @@ void IMoveAction::apply(InventoryContext *c, InventoryManager *mgr)
 	Craft checking system
 */
 
-bool ItemSpec::checkItem(InventoryItem *item)
+bool ItemSpec::checkItem(InventoryItem *item) const
 {
 	if(type == ITEM_NONE)
 	{
