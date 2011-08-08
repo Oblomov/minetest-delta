@@ -28,7 +28,7 @@ class Strfnd{
     std::string tek;
     unsigned int p;
 public:
-    void start(std::string niinq){
+    void start(const std::string &niinq){
         tek = niinq;
         p=0;
     }
@@ -41,7 +41,7 @@ public:
     std::string what(){
         return tek;
     }
-    std::string next(std::string plop){
+    std::string next(const std::string &plop){
         //std::cout<<"tek=\""<<tek<<"\" plop=\""<<plop<<"\""<<std::endl;
         size_t n;
         std::string palautus;
@@ -69,7 +69,7 @@ public:
         if(p>=tek.size()) return true;
         return false;
     }
-    Strfnd(std::string s){
+    Strfnd(const std::string &s){
         start(s);
     }
 };
@@ -78,7 +78,7 @@ class WStrfnd{
     std::wstring tek;
     unsigned int p;
 public:
-    void start(std::wstring niinq){
+    void start(const std::wstring &niinq){
         tek = niinq;
         p=0;
     }
@@ -91,7 +91,7 @@ public:
     std::wstring what(){
         return tek;
     }
-    std::wstring next(std::wstring plop){
+    std::wstring next(const std::wstring &plop){
         //std::cout<<"tek=\""<<tek<<"\" plop=\""<<plop<<"\""<<std::endl;
         size_t n;
         std::wstring palautus;
@@ -119,7 +119,7 @@ public:
         if(p>=tek.size()) return true;
         return false;
     }
-    WStrfnd(std::wstring s){
+    WStrfnd(const std::wstring &s){
         start(s);
     }
 };
