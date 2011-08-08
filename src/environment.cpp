@@ -77,9 +77,9 @@ re_search:
 	}
 }
 
-Player * Environment::getPlayer(u16 peer_id)
+Player * Environment::getPlayer(u16 peer_id) const
 {
-	for(core::list<Player*>::Iterator i = m_players.begin();
+	for(core::list<Player*>::ConstIterator i = m_players.begin();
 			i != m_players.end(); i++)
 	{
 		Player *player = *i;
@@ -89,9 +89,9 @@ Player * Environment::getPlayer(u16 peer_id)
 	return NULL;
 }
 
-Player * Environment::getPlayer(const char *name)
+Player * Environment::getPlayer(const char *name) const
 {
-	for(core::list<Player*>::Iterator i = m_players.begin();
+	for(core::list<Player*>::ConstIterator i = m_players.begin();
 			i != m_players.end(); i++)
 	{
 		Player *player = *i;
@@ -101,7 +101,7 @@ Player * Environment::getPlayer(const char *name)
 	return NULL;
 }
 
-Player * Environment::getRandomConnectedPlayer()
+Player * Environment::getRandomConnectedPlayer() const
 {
 	core::list<Player*> connected_players = getPlayers(true);
 	u32 chosen_one = myrand() % connected_players.size();
@@ -120,7 +120,7 @@ Player * Environment::getRandomConnectedPlayer()
 	return NULL;
 }
 
-Player * Environment::getNearestConnectedPlayer(const v3f &pos)
+Player * Environment::getNearestConnectedPlayer(const v3f &pos) const
 {
 	core::list<Player*> connected_players = getPlayers(true);
 	f32 nearest_d = 0;
@@ -140,15 +140,15 @@ Player * Environment::getNearestConnectedPlayer(const v3f &pos)
 	return nearest_player;
 }
 
-core::list<Player*> Environment::getPlayers()
+core::list<Player*> Environment::getPlayers() const
 {
 	return m_players;
 }
 
-core::list<Player*> Environment::getPlayers(bool ignore_disconnected)
+core::list<Player*> Environment::getPlayers(bool ignore_disconnected) const
 {
 	core::list<Player*> newlist;
-	for(core::list<Player*>::Iterator
+	for(core::list<Player*>::ConstIterator
 			i = m_players.begin();
 			i != m_players.end(); i++)
 	{
@@ -166,10 +166,10 @@ core::list<Player*> Environment::getPlayers(bool ignore_disconnected)
 	return newlist;
 }
 
-void Environment::printPlayers(std::ostream &o)
+void Environment::printPlayers(std::ostream &o) const
 {
 	o<<"Players in environment:"<<std::endl;
-	for(core::list<Player*>::Iterator i = m_players.begin();
+	for(core::list<Player*>::ConstIterator i = m_players.begin();
 			i != m_players.end(); i++)
 	{
 		Player *player = *i;
@@ -182,7 +182,7 @@ void Environment::printPlayers(std::ostream &o)
 	getDayNightRatio() = r;
 }*/
 
-u32 Environment::getDayNightRatio()
+u32 Environment::getDayNightRatio() const
 {
 	//return getDayNightRatio();
 	return time_to_daynight_ratio(m_time_of_day);
@@ -284,7 +284,7 @@ ServerEnvironment::~ServerEnvironment()
 	m_map->drop();
 }
 
-void ServerEnvironment::serializePlayers(const std::string &savedir)
+void ServerEnvironment::serializePlayers(const std::string &savedir) const
 {
 	std::string players_path = savedir + "/players";
 	fs::CreateDir(players_path);
@@ -342,7 +342,7 @@ void ServerEnvironment::serializePlayers(const std::string &savedir)
 		}
 	}
 
-	for(core::list<Player*>::Iterator i = m_players.begin();
+	for(core::list<Player*>::ConstIterator i = m_players.begin();
 			i != m_players.end(); i++)
 	{
 		Player *player = *i;
@@ -468,7 +468,7 @@ void ServerEnvironment::deSerializePlayers(const std::string &savedir)
 	}
 }
 
-void ServerEnvironment::saveMeta(const std::string &savedir)
+void ServerEnvironment::saveMeta(const std::string &savedir) const
 {
 	std::string path = savedir + "/env_meta.txt";
 
@@ -1020,7 +1020,7 @@ void ServerEnvironment::step(float dtime)
 	} // enable_experimental
 }
 
-ServerActiveObject* ServerEnvironment::getActiveObject(u16 id)
+ServerActiveObject* ServerEnvironment::getActiveObject(u16 id) const
 {
 	core::map<u16, ServerActiveObject*>::Node *n;
 	n = m_active_objects.find(id);
@@ -1482,9 +1482,9 @@ void ClientEnvironment::addPlayer(Player *player)
 	Environment::addPlayer(player);
 }
 
-LocalPlayer * ClientEnvironment::getLocalPlayer()
+LocalPlayer * ClientEnvironment::getLocalPlayer() const
 {
-	for(core::list<Player*>::Iterator i = m_players.begin();
+	for(core::list<Player*>::ConstIterator i = m_players.begin();
 			i != m_players.end(); i++)
 	{
 		Player *player = *i;
@@ -1729,7 +1729,7 @@ void ClientEnvironment::expireMeshes(bool only_daynight_diffed)
 	m_map->expireMeshes(only_daynight_diffed);
 }
 
-ClientActiveObject* ClientEnvironment::getActiveObject(u16 id)
+ClientActiveObject* ClientEnvironment::getActiveObject(u16 id) const
 {
 	core::map<u16, ClientActiveObject*>::Node *n;
 	n = m_active_objects.find(id);
