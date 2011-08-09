@@ -2004,7 +2004,7 @@ void Client::addNode(v3s16 p, MapNode n)
 
 void Client::moveDynLight(const v3s16 &oldp, const v3s16 &newp)
 {
-	TimeTaker timer1("Client::moveDynLight()");
+	// TimeTaker timer1("Client::moveDynLight()");
 
 	Map *map = &m_env.getMap();
 	core::map<v3s16, MapBlock*> modified_blocks;
