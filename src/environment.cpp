@@ -1597,10 +1597,10 @@ void ClientEnvironment::step(float dtime)
 				Move the lplayer.
 				This also does collision detection.
 			*/
-			v3s16 oldp = floatToInt(lplayer->getPosition(), BS);
+			v3s16 oldp = lplayer->getLightPosition();
 			lplayer->move(dtime_part, *m_map, position_max_increment,
 					&player_collisions);
-			v3s16 newp = floatToInt(lplayer->getPosition(), BS);
+			v3s16 newp = lplayer->getLightPosition();
 			if (oldp != newp) {
 				ClientEnvEvent event;
 				event.type = CEE_DYNLIGHT_CHANGE;
@@ -1659,10 +1659,10 @@ void ClientEnvironment::step(float dtime)
 		*/
 		if(player->isLocal() == false)
 		{
-			v3s16 oldp = floatToInt(player->getPosition(), BS);
+			v3s16 oldp = player->getLightPosition();
 			// Move
 			player->move(dtime, *m_map, 100*BS);
-			v3s16 newp = floatToInt(player->getPosition(), BS);
+			v3s16 newp = player->getLightPosition();
 			if (oldp != newp) {
 				ClientEnvEvent event;
 				event.type = CEE_DYNLIGHT_CHANGE;

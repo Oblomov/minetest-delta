@@ -780,9 +780,9 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			// Set player position
 			Player *player = m_env.getLocalPlayer();
 			assert(player != NULL);
-			v3s16 oldp = floatToInt(player->getPosition(), BS);
+			v3s16 oldp = player->getLightPosition();
 			player->setPosition(playerpos_f);
-			v3s16 newp = floatToInt(player->getPosition(), BS);
+			v3s16 newp = player->getLightPosition();
 			if (oldp != newp) {
 				moveDynLight(oldp, newp);
 			}
@@ -1259,12 +1259,12 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			v3f position((f32)p_i.X/100., (f32)p_i.Y/100., (f32)p_i.Z/100.);
 			v3f speed((f32)s_i.X/100., (f32)s_i.Y/100., (f32)s_i.Z/100.);
 			
-			v3s16 oldp = floatToInt(player->getPosition(), BS);
+			v3s16 oldp = player->getLightPosition();
 			player->setPosition(position);
 			player->setSpeed(speed);
 			player->setPitch(pitch);
 			player->setYaw(yaw);
-			v3s16 newp = floatToInt(player->getPosition(), BS);
+			v3s16 newp = player->getLightPosition();
 			if (oldp != newp) {
 				moveDynLight(oldp, newp);
 			}
