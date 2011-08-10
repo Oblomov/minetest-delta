@@ -610,6 +610,11 @@ struct MapNode
 			assert(0);
 	}
 
+	u8 getExtraLight() const
+	{
+		return m_extra_light;
+	}
+
 	void setExtraLight(u8 a_light)
 	{
 		m_extra_light = a_light;

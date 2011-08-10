@@ -2030,19 +2030,24 @@ void Client::moveDynLight(const v3s16 &oldp, const v3s16 &newp)
 	Map *map = &m_env.getMap();
 	core::map<v3s16, MapBlock*> modified_blocks;
 
+	u8 light = 0;
+
 	try {
 		MapNode n = map->getNode(oldp);
+		light = n.getExtraLight();
 		n.setExtraLight(0);
 		map->addNodeAndUpdate(oldp, n, modified_blocks);
 	} catch (InvalidPositionException &e)
 	{};
 
-	try {
-		MapNode n = map->getNode(newp);
-		n.setExtraLight(LIGHT_MAX-1);
-		map->addNodeAndUpdate(newp, n, modified_blocks);
-	} catch (InvalidPositionException &e)
-	{};
+	if (light > 0) {
+		try {
+			MapNode n = map->getNode(newp);
+			n.setExtraLight(light);
+			map->addNodeAndUpdate(newp, n, modified_blocks);
+		} catch (InvalidPositionException &e)
+		{};
+	}
 
 	for(core::map<v3s16, MapBlock * >::Iterator
 			i = modified_blocks.getIterator();
