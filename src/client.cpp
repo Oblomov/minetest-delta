@@ -783,7 +783,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			v3s16 oldp = player->getLightPosition();
 			player->setPosition(playerpos_f);
 			v3s16 newp = player->getLightPosition();
-			if (oldp != newp) {
+			if (player->emittedLight() > 0 && oldp != newp) {
 				moveDynLight(oldp, newp);
 			}
 		}
@@ -1265,7 +1265,7 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			player->setPitch(pitch);
 			player->setYaw(yaw);
 			v3s16 newp = player->getLightPosition();
-			if (oldp != newp) {
+			if (player->emittedLight() > 0 && oldp != newp) {
 				moveDynLight(oldp, newp);
 			}
 		}
@@ -2002,6 +2002,27 @@ void Client::addNode(v3s16 p, MapNode n)
 	}
 }
 
+void Client::setDynLight(const v3s16 &pos, u8 intensity)
+{
+	Map *map = &m_env.getMap();
+	core::map<v3s16, MapBlock*> modified_blocks;
+
+	try {
+		MapNode n = map->getNode(pos);
+		n.setExtraLight(intensity);
+		map->addNodeAndUpdate(pos, n, modified_blocks);
+	} catch (InvalidPositionException &e)
+	{};
+
+	for(core::map<v3s16, MapBlock * >::Iterator
+			i = modified_blocks.getIterator();
+			i.atEnd() == false; i++)
+	{
+		v3s16 p = i.getNode()->getKey();
+		addUpdateMeshTaskWithEdge(p);
+	}
+}
+
 void Client::moveDynLight(const v3s16 &oldp, const v3s16 &newp)
 {
 	// TimeTaker timer1("Client::moveDynLight()");
@@ -2076,6 +2097,10 @@ void Client::selectPlayerItem(u16 item)
 	player->wieldItem(item);
 
 	sendPlayerItem(item);
+
+	u8 light = player->emittedLight();
+
+	setDynLight(player->getLightPosition(), light);
 }
 
 // Returns true if the inventory of the local player has been

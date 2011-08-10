@@ -53,6 +53,14 @@ void Player::wieldItem(u16 item)
 	m_selected_item = item;
 }
 
+u8 Player::emittedLight() const
+{
+	const InventoryItem *wield = getWieldItem();
+	if (wield)
+		return wield->emittedLight();
+	return 0;
+}
+
 void Player::resetInventory()
 {
 	inventory.clear();

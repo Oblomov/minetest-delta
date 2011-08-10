@@ -1601,7 +1601,7 @@ void ClientEnvironment::step(float dtime)
 			lplayer->move(dtime_part, *m_map, position_max_increment,
 					&player_collisions);
 			v3s16 newp = lplayer->getLightPosition();
-			if (oldp != newp) {
+			if (lplayer->emittedLight() > 0 && oldp != newp) {
 				ClientEnvEvent event;
 				event.type = CEE_DYNLIGHT_CHANGE;
 				event.player_position.prev_X = oldp.X;
@@ -1663,7 +1663,7 @@ void ClientEnvironment::step(float dtime)
 			// Move
 			player->move(dtime, *m_map, 100*BS);
 			v3s16 newp = player->getLightPosition();
-			if (oldp != newp) {
+			if (player->emittedLight() > 0 && oldp != newp) {
 				ClientEnvEvent event;
 				event.type = CEE_DYNLIGHT_CHANGE;
 				event.player_position.prev_X = oldp.X;

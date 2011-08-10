@@ -106,6 +106,8 @@ public:
 	}
 
 	virtual void wieldItem(u16 item);
+	virtual u8 emittedLight() const;
+
 	virtual const InventoryItem *getWieldItem() const
 	{
 		const InventoryList *list = inventory.getList("main");
