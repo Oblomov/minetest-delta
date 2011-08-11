@@ -1548,7 +1548,13 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 		v3f pos = readV3F1000(is);
 		f32 pitch = readF1000(is);
 		f32 yaw = readF1000(is);
+		v3s16 oldp = player->getLightPosition();
 		player->setPosition(pos);
+		v3s16 newp = player->getLightPosition();
+		u8 light = player->emittedLight();
+		if (light > 0 && oldp != newp) {
+			moveDynLight(oldp, newp, light);
+		}
 		/*player->setPitch(pitch);
 		player->setYaw(yaw);*/
 
