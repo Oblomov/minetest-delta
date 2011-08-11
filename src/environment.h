@@ -336,7 +336,8 @@ struct ClientEnvEvent
 			s16 curr_X;
 			s16 curr_Y;
 			s16 curr_Z;
-		} player_position;
+			u8  intensity;
+		} dynamic_light;
 	};
 };
 

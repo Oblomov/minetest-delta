@@ -201,7 +201,7 @@ public:
 
 	void setDynLight(const v3s16 &pos, u8 intensity);
 	void setDynLight(const Player *player);
-	void moveDynLight(const v3s16 &oldp, const v3s16 &newp);
+	void moveDynLight(const v3s16 &oldp, const v3s16 &newp, u8 intensity=0);
 
 	void updateCamera(v3f pos, v3f dir);
 	

@@ -1601,15 +1601,17 @@ void ClientEnvironment::step(float dtime)
 			lplayer->move(dtime_part, *m_map, position_max_increment,
 					&player_collisions);
 			v3s16 newp = lplayer->getLightPosition();
-			if (lplayer->emittedLight() > 0 && oldp != newp) {
+			u8 light = lplayer->emittedLight();
+			if ( light > 0 && oldp != newp) {
 				ClientEnvEvent event;
 				event.type = CEE_DYNLIGHT_CHANGE;
-				event.player_position.prev_X = oldp.X;
-				event.player_position.prev_Y = oldp.Y;
-				event.player_position.prev_Z = oldp.Z;
-				event.player_position.curr_X = newp.X;
-				event.player_position.curr_Y = newp.Y;
-				event.player_position.curr_Z = newp.Z;
+				event.dynamic_light.prev_X = oldp.X;
+				event.dynamic_light.prev_Y = oldp.Y;
+				event.dynamic_light.prev_Z = oldp.Z;
+				event.dynamic_light.curr_X = newp.X;
+				event.dynamic_light.curr_Y = newp.Y;
+				event.dynamic_light.curr_Z = newp.Z;
+				event.dynamic_light.intensity = light;
 				m_client_event_queue.push_back(event);
 			}
 		}
@@ -1663,20 +1665,22 @@ void ClientEnvironment::step(float dtime)
 			// Move
 			player->move(dtime, *m_map, 100*BS);
 			v3s16 newp = player->getLightPosition();
-			if (player->emittedLight() > 0 && oldp != newp) {
+			u8 light = player->emittedLight();
+			if (light > 0 && oldp != newp) {
 				ClientEnvEvent event;
 				event.type = CEE_DYNLIGHT_CHANGE;
-				event.player_position.prev_X = oldp.X;
-				event.player_position.prev_Y = oldp.Y;
-				event.player_position.prev_Z = oldp.Z;
-				event.player_position.curr_X = newp.X;
-				event.player_position.curr_Y = newp.Y;
-				event.player_position.curr_Z = newp.Z;
+				event.dynamic_light.prev_X = oldp.X;
+				event.dynamic_light.prev_Y = oldp.Y;
+				event.dynamic_light.prev_Z = oldp.Z;
+				event.dynamic_light.curr_X = newp.X;
+				event.dynamic_light.curr_Y = newp.Y;
+				event.dynamic_light.curr_Z = newp.Z;
+				event.dynamic_light.intensity = light;
 				m_client_event_queue.push_back(event);
 			}
 
 			// Update lighting on remote players on client
-			u8 light = LIGHT_MAX;
+			light = LIGHT_MAX;
 			try{
 				// Get node at head
 				v3s16 p = player->getLightPosition();

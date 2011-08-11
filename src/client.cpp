@@ -567,14 +567,15 @@ void Client::step(float dtime)
 			else if(event.type == CEE_DYNLIGHT_CHANGE)
 			{
 				v3s16 oldp, newp;
-				oldp.X = event.player_position.prev_X;
-				oldp.Y = event.player_position.prev_Y;
-				oldp.Z = event.player_position.prev_Z;
-				newp.X = event.player_position.curr_X;
-				newp.Y = event.player_position.curr_Y;
-				newp.Z = event.player_position.curr_Z;
+				oldp.X = event.dynamic_light.prev_X;
+				oldp.Y = event.dynamic_light.prev_Y;
+				oldp.Z = event.dynamic_light.prev_Z;
+				newp.X = event.dynamic_light.curr_X;
+				newp.Y = event.dynamic_light.curr_Y;
+				newp.Z = event.dynamic_light.curr_Z;
 
-				moveDynLight(oldp, newp);
+				moveDynLight(oldp, newp,
+					event.dynamic_light.intensity);
 			}
 		}
 	}
@@ -783,8 +784,9 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			v3s16 oldp = player->getLightPosition();
 			player->setPosition(playerpos_f);
 			v3s16 newp = player->getLightPosition();
-			if (player->emittedLight() > 0 && oldp != newp) {
-				moveDynLight(oldp, newp);
+			u8 light = player->emittedLight();
+			if (light > 0 && oldp != newp) {
+				moveDynLight(oldp, newp, light);
 			}
 		}
 		
@@ -1265,8 +1267,9 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 			player->setPitch(pitch);
 			player->setYaw(yaw);
 			v3s16 newp = player->getLightPosition();
-			if (player->emittedLight() > 0 && oldp != newp) {
-				moveDynLight(oldp, newp);
+			u8 light = player->emittedLight();
+			if (light > 0 && oldp != newp) {
+				moveDynLight(oldp, newp, light);
 			}
 		}
 
@@ -2030,30 +2033,28 @@ void Client::setDynLight(const Player *player)
 	setDynLight(player->getLightPosition(), player->emittedLight());
 }
 
-void Client::moveDynLight(const v3s16 &oldp, const v3s16 &newp)
+void Client::moveDynLight(const v3s16 &oldp, const v3s16 &newp, u8 intensity)
 {
 	// TimeTaker timer1("Client::moveDynLight()");
 
 	Map *map = &m_env.getMap();
 	core::map<v3s16, MapBlock*> modified_blocks;
 
-	u8 light = 0;
+	u8 light = intensity;
 
 	try {
 		MapNode n = map->getNode(oldp);
 		light = n.getExtraLight();
 		n.setExtraLight(0);
 		map->addNodeAndUpdate(oldp, n, modified_blocks);
-	} catch (InvalidPositionException &e)
-	{};
+	} catch (InvalidPositionException &e) {};
 
 	if (light > 0) {
 		try {
 			MapNode n = map->getNode(newp);
 			n.setExtraLight(light);
 			map->addNodeAndUpdate(newp, n, modified_blocks);
-		} catch (InvalidPositionException &e)
-		{};
+		} catch (InvalidPositionException &e) {};
 	}
 
 	for(core::map<v3s16, MapBlock * >::Iterator
