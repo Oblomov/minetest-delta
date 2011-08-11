@@ -1129,6 +1129,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 					continue;
 				dstream<<DTIME<<"Removing dead player "<<(*ip)->peer_id
 						<<std::endl;
+				// reset light
+				setDynLight((*ip)->getLightPosition(), 0);
 				m_env.removePlayer((*ip)->peer_id);
 			}
 		} //envlock
