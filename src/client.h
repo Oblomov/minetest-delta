@@ -200,6 +200,7 @@ public:
 	void addNode(v3s16 p, MapNode n);
 
 	void setDynLight(const v3s16 &pos, u8 intensity);
+	void setDynLight(const Player *player);
 	void moveDynLight(const v3s16 &oldp, const v3s16 &newp);
 
 	void updateCamera(v3f pos, v3f dir);

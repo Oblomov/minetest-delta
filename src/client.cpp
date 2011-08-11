@@ -1610,6 +1610,8 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 					dout_client<<std::endl;
 				}
 			}
+			// (re)set the player lighting
+			setDynLight(player);
 		}
 	}
 	else
@@ -2021,6 +2023,11 @@ void Client::setDynLight(const v3s16 &pos, u8 intensity)
 		v3s16 p = i.getNode()->getKey();
 		addUpdateMeshTaskWithEdge(p);
 	}
+}
+
+void Client::setDynLight(const Player *player)
+{
+	setDynLight(player->getLightPosition(), player->emittedLight());
 }
 
 void Client::moveDynLight(const v3s16 &oldp, const v3s16 &newp)
