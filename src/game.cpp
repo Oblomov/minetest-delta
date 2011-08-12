@@ -1752,7 +1752,7 @@ void the_game(
 				Check information text of node
 			*/
 
-			NodeMetadata *meta = client.getNodeMetadata(nodepos);
+			const NodeMetadata *meta = client.getNodeMetadata(nodepos);
 			if(meta)
 			{
 				infotext = narrow_to_wide(meta->infoText());
