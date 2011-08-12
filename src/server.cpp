@@ -335,7 +335,7 @@ void * EmergeThread::Thread()
 	return NULL;
 }
 
-void RemoteClient::GetNextBlocks(Server *server, float dtime,
+void RemoteClient::GetNextBlocks(const Server *server, float dtime,
 		core::array<PrioritySortedBlockTransfer> &dest)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -363,7 +363,7 @@ void RemoteClient::GetNextBlocks(Server *server, float dtime,
 
 	//TimeTaker timer("RemoteClient::GetNextBlocks");
 	
-	Player *player = server->m_env.getPlayer(peer_id);
+	const Player *player = server->m_env.getPlayer(peer_id);
 
 	assert(player != NULL);
 
@@ -752,7 +752,7 @@ queue_full_break:
 }
 
 void RemoteClient::SendObjectData(
-		Server *server,
+		const Server *server,
 		float dtime,
 		core::map<v3s16, bool> &stepped_blocks
 	)
@@ -795,18 +795,18 @@ void RemoteClient::SendObjectData(
 	*/
 	
 	// Get connected players
-	core::list<Player*> players = server->m_env.getPlayers(true);
+	core::list<const Player*> players = server->m_env.getPlayers(true);
 
 	// Write player count
 	u16 playercount = players.size();
 	writeU16(buf, playercount);
 	os.write((char*)buf, 2);
 
-	core::list<Player*>::Iterator i;
+	core::list<const Player*>::ConstIterator i;
 	for(i = players.begin();
 			i != players.end(); i++)
 	{
-		Player *player = *i;
+		const Player *player = *i;
 
 		v3f pf = player->getPosition();
 		v3f sf = player->getSpeed();
@@ -844,7 +844,7 @@ void RemoteClient::SendObjectData(
 		SUGGESTION: These could be ignored from the backside of the player
 	*/
 
-	Player *player = server->m_env.getPlayer(peer_id);
+	const Player *player = server->m_env.getPlayer(peer_id);
 
 	assert(player);
 
@@ -968,7 +968,7 @@ skip_subsequent:
 	server->m_con.Send(peer_id, 0, data, false);
 }
 
-void RemoteClient::GotBlock(v3s16 p)
+void RemoteClient::GotBlock(const v3s16 &p)
 {
 	if(m_blocks_sending.find(p) != NULL)
 		m_blocks_sending.remove(p);
@@ -981,7 +981,7 @@ void RemoteClient::GotBlock(v3s16 p)
 	m_blocks_sent.insert(p, true);
 }
 
-void RemoteClient::SentBlock(v3s16 p)
+void RemoteClient::SentBlock(const v3s16 &p)
 {
 	if(m_blocks_sending.find(p) == NULL)
 		m_blocks_sending.insert(p, 0.0);
@@ -990,7 +990,7 @@ void RemoteClient::SentBlock(v3s16 p)
 				" already in m_blocks_sending"<<std::endl;
 }
 
-void RemoteClient::SetBlockNotSent(v3s16 p)
+void RemoteClient::SetBlockNotSent(const v3s16 &p)
 {
 	m_nearest_unsent_d = 0;
 	
@@ -1027,7 +1027,7 @@ PlayerInfo::PlayerInfo()
 	avg_rtt = 0;
 }
 
-void PlayerInfo::PrintLine(std::ostream *s)
+void PlayerInfo::PrintLine(std::ostream *s) const
 {
 	(*s)<<id<<": ";
 	(*s)<<"\""<<name<<"\" ("
@@ -1038,9 +1038,9 @@ void PlayerInfo::PrintLine(std::ostream *s)
 	(*s)<<std::endl;
 }
 
-u32 PIChecksum(core::list<PlayerInfo> &l)
+u32 PIChecksum(const core::list<PlayerInfo> &l)
 {
-	core::list<PlayerInfo>::Iterator i;
+	core::list<PlayerInfo>::ConstIterator i;
 	u32 checksum = 1;
 	u32 a = 10;
 	for(i=l.begin(); i!=l.end(); i++)
@@ -2339,7 +2339,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 			return;
 		}
 
-		MapBlockObject *obj = block->getObject(id);
+		const MapBlockObject *obj = block->getObject(id);
 
 		if(obj == NULL)
 		{
@@ -2595,7 +2595,7 @@ void Server::ProcessData(u8 *data, u32 datasize, u16 peer_id)
 				if(cannot_remove_node == false)
 				{
 					// Get node metadata
-					NodeMetadata *meta = m_env.getMap().getNodeMetadata(p_under);
+					const NodeMetadata *meta = m_env.getMap().getNodeMetadata(p_under);
 					if(meta && meta->nodeRemovalDisabled() == true)
 					{
 						derr_server<<"Server: Not finishing digging: "
@@ -3602,7 +3602,7 @@ void Server::deletingPeer(con::Peer *peer, bool timeout)
 	Static send methods
 */
 
-void Server::SendHP(con::Connection &con, u16 peer_id, u8 hp)
+void Server::SendHP(const con::Connection &con, u16 peer_id, u8 hp)
 {
 	DSTACK(__FUNCTION_NAME);
 	std::ostringstream os(std::ios_base::binary);
@@ -3617,7 +3617,7 @@ void Server::SendHP(con::Connection &con, u16 peer_id, u8 hp)
 	con.Send(peer_id, 0, data, true);
 }
 
-void Server::SendAccessDenied(con::Connection &con, u16 peer_id,
+void Server::SendAccessDenied(const con::Connection &con, u16 peer_id,
 		const std::wstring &reason)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -3637,14 +3637,14 @@ void Server::SendAccessDenied(con::Connection &con, u16 peer_id,
 	Non-static send methods
 */
 
-void Server::SendObjectData(float dtime)
+void Server::SendObjectData(float dtime) const
 {
 	DSTACK(__FUNCTION_NAME);
 
 	core::map<v3s16, bool> stepped_blocks;
 	
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
+	for(core::map<u16, RemoteClient*>::ConstIterator
+		i = m_clients.getConstIterator();
 		i.atEnd() == false; i++)
 	{
 		u16 peer_id = i.getNode()->getKey();
@@ -3658,14 +3658,14 @@ void Server::SendObjectData(float dtime)
 	}
 }
 
-void Server::SendPlayerInfos()
+void Server::SendPlayerInfos() const
 {
 	DSTACK(__FUNCTION_NAME);
 
 	//JMutexAutoLock envlock(m_env_mutex);
 	
 	// Get connected players
-	core::list<Player*> players = m_env.getPlayers(true);
+	core::list<const Player*> players = m_env.getPlayers(true);
 	
 	u32 player_count = players.getSize();
 	u32 datasize = 2+(2+PLAYERNAME_SIZE)*player_count;
@@ -3674,11 +3674,11 @@ void Server::SendPlayerInfos()
 	writeU16(&data[0], TOCLIENT_PLAYERINFO);
 	
 	u32 start = 2;
-	core::list<Player*>::Iterator i;
+	core::list<const Player*>::ConstIterator i;
 	for(i = players.begin();
 			i != players.end(); i++)
 	{
-		Player *player = *i;
+		const Player *player = *i;
 
 		/*dstream<<"Server sending player info for player with "
 				"peer_id="<<player->peer_id<<std::endl;*/
@@ -3695,11 +3695,11 @@ void Server::SendPlayerInfos()
 	m_con.SendToAll(0, data, true);
 }
 
-void Server::SendInventory(u16 peer_id)
+void Server::SendInventory(u16 peer_id) const
 {
 	DSTACK(__FUNCTION_NAME);
 	
-	Player* player = m_env.getPlayer(peer_id);
+	const Player* player = m_env.getPlayer(peer_id);
 	assert(player);
 
 	/*
@@ -3731,7 +3731,7 @@ std::string getWieldedItemString(const Player *player)
 	return os.str();
 }
 
-void Server::SendWieldedItem(const Player* player)
+void Server::SendWieldedItem(const Player* player) const
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -3751,19 +3751,19 @@ void Server::SendWieldedItem(const Player* player)
 	m_con.SendToAll(0, data, true);
 }
 
-void Server::SendPlayerItems()
+void Server::SendPlayerItems() const
 {
 	DSTACK(__FUNCTION_NAME);
 
 	std::ostringstream os(std::ios_base::binary);
-	core::list<Player *> players = m_env.getPlayers(true);
+	core::list<const Player *> players = m_env.getPlayers(true);
 
 	writeU16(os, TOCLIENT_PLAYERITEM);
 	writeU16(os, players.size());
-	core::list<Player *>::Iterator i;
+	core::list<const Player *>::ConstIterator i;
 	for(i = players.begin(); i != players.end(); ++i)
 	{
-		Player *p = *i;
+		const Player *p = *i;
 		writeU16(os, p->peer_id);
 		os<<serializeString(getWieldedItemString(p));
 	}
@@ -3775,7 +3775,7 @@ void Server::SendPlayerItems()
 	m_con.SendToAll(0, data, true);
 }
 
-void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
+void Server::SendChatMessage(u16 peer_id, const std::wstring &message) const
 {
 	DSTACK(__FUNCTION_NAME);
 	
@@ -3805,14 +3805,14 @@ void Server::SendChatMessage(u16 peer_id, const std::wstring &message)
 	m_con.Send(peer_id, 0, data, true);
 }
 
-void Server::BroadcastChatMessage(const std::wstring &message)
+void Server::BroadcastChatMessage(const std::wstring &message) const
 {
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
+	for(core::map<u16, RemoteClient*>::ConstIterator
+		i = m_clients.getConstIterator();
 		i.atEnd() == false; i++)
 	{
 		// Get client and check that it is valid
-		RemoteClient *client = i.getNode()->getValue();
+		const RemoteClient *client = i.getNode()->getValue();
 		assert(client->peer_id == i.getNode()->getKey());
 		if(client->serialization_version == SER_FMT_VER_INVALID)
 			continue;
@@ -3821,12 +3821,12 @@ void Server::BroadcastChatMessage(const std::wstring &message)
 	}
 }
 
-void Server::SendPlayerHP(Player *player)
+void Server::SendPlayerHP(const Player *player) const
 {
 	SendHP(m_con, player->peer_id, player->hp);
 }
 
-void Server::SendMovePlayer(Player *player)
+void Server::SendMovePlayer(const Player *player) const
 {
 	DSTACK(__FUNCTION_NAME);
 	std::ostringstream os(std::ios_base::binary);
@@ -3854,8 +3854,8 @@ void Server::SendMovePlayer(Player *player)
 	m_con.Send(player->peer_id, 0, data, true);
 }
 
-void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
-	core::list<u16> *far_players, float far_d_nodes)
+void Server::sendRemoveNode(const v3s16 &p, u16 ignore_id,
+	core::list<u16> *far_players, float far_d_nodes) const
 {
 	float maxd = far_d_nodes*BS;
 	v3f p_f = intToFloat(p, BS);
@@ -3868,12 +3868,12 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	writeS16(&reply[4], p.Y);
 	writeS16(&reply[6], p.Z);
 
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
+	for(core::map<u16, RemoteClient*>::ConstIterator
+		i = m_clients.getConstIterator();
 		i.atEnd() == false; i++)
 	{
 		// Get client and check that it is valid
-		RemoteClient *client = i.getNode()->getValue();
+		const RemoteClient *client = i.getNode()->getValue();
 		assert(client->peer_id == i.getNode()->getKey());
 		if(client->serialization_version == SER_FMT_VER_INVALID)
 			continue;
@@ -3885,7 +3885,7 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 		if(far_players)
 		{
 			// Get player
-			Player *player = m_env.getPlayer(client->peer_id);
+			const Player *player = m_env.getPlayer(client->peer_id);
 			if(player)
 			{
 				// If player is far away, only set modified blocks not sent
@@ -3903,18 +3903,18 @@ void Server::sendRemoveNode(v3s16 p, u16 ignore_id,
 	}
 }
 
-void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
-		core::list<u16> *far_players, float far_d_nodes)
+void Server::sendAddNode(const v3s16 &p, const MapNode &n, u16 ignore_id,
+		core::list<u16> *far_players, float far_d_nodes) const
 {
 	float maxd = far_d_nodes*BS;
 	v3f p_f = intToFloat(p, BS);
 
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
+	for(core::map<u16, RemoteClient*>::ConstIterator
+		i = m_clients.getConstIterator();
 		i.atEnd() == false; i++)
 	{
 		// Get client and check that it is valid
-		RemoteClient *client = i.getNode()->getValue();
+		const RemoteClient *client = i.getNode()->getValue();
 		assert(client->peer_id == i.getNode()->getKey());
 		if(client->serialization_version == SER_FMT_VER_INVALID)
 			continue;
@@ -3926,7 +3926,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 		if(far_players)
 		{
 			// Get player
-			Player *player = m_env.getPlayer(client->peer_id);
+			const Player *player = m_env.getPlayer(client->peer_id);
 			if(player)
 			{
 				// If player is far away, only set modified blocks not sent
@@ -3953,7 +3953,7 @@ void Server::sendAddNode(v3s16 p, MapNode n, u16 ignore_id,
 	}
 }
 
-void Server::setBlockNotSent(v3s16 p)
+void Server::setBlockNotSent(const v3s16 &p)
 {
 	for(core::map<u16, RemoteClient*>::Iterator
 		i = m_clients.getIterator();
@@ -3964,7 +3964,7 @@ void Server::setBlockNotSent(v3s16 p)
 	}
 }
 
-void Server::SendBlockNoLock(u16 peer_id, MapBlock *block, u8 ver)
+void Server::SendBlockNoLock(u16 peer_id, const MapBlock *block, u8 ver) const
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -4033,8 +4033,8 @@ void Server::SendBlocks(float dtime)
 	{
 		ScopeProfiler sp(&g_profiler, "Server: selecting blocks for sending");
 
-		for(core::map<u16, RemoteClient*>::Iterator
-			i = m_clients.getIterator();
+		for(core::map<u16, RemoteClient*>::ConstIterator
+			i = m_clients.getConstIterator();
 			i.atEnd() == false; i++)
 		{
 			RemoteClient *client = i.getNode()->getValue();
@@ -4126,6 +4126,17 @@ void Server::UpdateCrafting(u16 peer_id)
 	} // if creative_mode == false
 }
 
+const RemoteClient* Server::getClient(u16 peer_id) const
+{
+	DSTACK(__FUNCTION_NAME);
+	//JMutexAutoLock lock(m_con_mutex);
+	core::map<u16, RemoteClient*>::Node *n;
+	n = m_clients.find(peer_id);
+	// A client should exist for all peers
+	assert(n != NULL);
+	return n->getValue();
+}
+
 RemoteClient* Server::getClient(u16 peer_id)
 {
 	DSTACK(__FUNCTION_NAME);
@@ -4137,7 +4148,7 @@ RemoteClient* Server::getClient(u16 peer_id)
 	return n->getValue();
 }
 
-std::wstring Server::getStatusString()
+std::wstring Server::getStatusString() const
 {
 	std::wostringstream os(std::ios_base::binary);
 	os<<L"# Server: ";
@@ -4147,17 +4158,17 @@ std::wstring Server::getStatusString()
 	os<<L", uptime="<<m_uptime.get();
 	// Information about clients
 	os<<L", clients={";
-	for(core::map<u16, RemoteClient*>::Iterator
-		i = m_clients.getIterator();
+	for(core::map<u16, RemoteClient*>::ConstIterator
+		i = m_clients.getConstIterator();
 		i.atEnd() == false; i++)
 	{
 		// Get client and check that it is valid
-		RemoteClient *client = i.getNode()->getValue();
+		const RemoteClient *client = i.getNode()->getValue();
 		assert(client->peer_id == i.getNode()->getKey());
 		if(client->serialization_version == SER_FMT_VER_INVALID)
 			continue;
 		// Get player
-		Player *player = m_env.getPlayer(client->peer_id);
+		const Player *player = m_env.getPlayer(client->peer_id);
 		// Get name of player
 		std::wstring name = L"unknown";
 		if(player != NULL)
@@ -4173,7 +4184,7 @@ std::wstring Server::getStatusString()
 	return os.str();
 }
 
-v3f findSpawnPos(ServerMap &map)
+v3f findSpawnPos(const ServerMap &map)
 {
 	//return v3f(50,50,50)*BS;
 
@@ -4434,7 +4445,7 @@ void Server::handlePeerChanges()
 	}
 }
 
-u64 Server::getPlayerPrivs(Player *player)
+u64 Server::getPlayerPrivs(const Player *player) const
 {
 	if(player==NULL)
 		return 0;
