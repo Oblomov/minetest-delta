@@ -55,7 +55,7 @@ content_t trans_table_19[21][2] = {
 	{CONTENT_BOOKSHELF, 29},
 };
 
-MapNode mapnode_translate_from_internal(MapNode n_from, u8 version)
+MapNode mapnode_translate_from_internal(const MapNode &n_from, u8 version)
 {
 	MapNode result = n_from;
 	if(version <= 19)
@@ -72,7 +72,7 @@ MapNode mapnode_translate_from_internal(MapNode n_from, u8 version)
 	}
 	return result;
 }
-MapNode mapnode_translate_to_internal(MapNode n_from, u8 version)
+MapNode mapnode_translate_to_internal(const MapNode &n_from, u8 version)
 {
 	MapNode result = n_from;
 	if(version <= 19)
