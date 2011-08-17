@@ -1618,6 +1618,10 @@ void the_game(
 		//timer2.stop();
 		//TimeTaker //timer3("//timer3");
 
+#if USE_AUDIO
+		Audio::system()->updateListener(camera);
+#endif
+
 		/*
 			Calculate what block is the crosshair pointing to
 		*/
