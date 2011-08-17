@@ -434,6 +434,10 @@ Doing currently:
 
 #include "gettext.h"
 
+#if USE_AUDIO
+#include "audio.h"
+#endif
+
 // This makes textures
 ITextureSource *g_texturesource = NULL;
 
@@ -1328,6 +1332,15 @@ int main(int argc, char *argv[])
 	}
 	
 	std::string playername = g_settings.get("name");
+
+	/*
+		Audio system initialization
+	*/
+
+#if USE_AUDIO
+	Audio::system()->init(porting::getDataPath("sounds/"));
+	Audio::system()->setAmbient("bgmusic", "titlemusic");
+#endif
 
 	/*
 		Device initialization

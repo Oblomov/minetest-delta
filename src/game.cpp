@@ -32,6 +32,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "farmesh.h"
 #include "mapblock.h"
 
+#if USE_AUDIO
+#include "audio.h"
+#endif
+
 /*
 	TODO: Move content-aware stuff to separate file by adding properties
 	      and virtual interfaces
@@ -769,6 +773,14 @@ void the_game(
     std::string configpath
 )
 {
+#if USE_AUDIO
+	// environmental noise
+	Audio::system()->setAmbient("envnoise", "ambient");
+	// background music
+	// TODO allow turning the music on/off
+	Audio::system()->setAmbient("bgmusic", "music");
+#endif
+
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 	
