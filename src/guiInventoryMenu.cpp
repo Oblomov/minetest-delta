@@ -247,16 +247,15 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s)
 					&AbsoluteClippingRect);
 		}
 
+		video::SColor bgcolor(255,128,128,128);
+		driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
+
 		if(item)
 		{
 			drawInventoryItem(driver, font, item,
 					rect, &AbsoluteClippingRect);
 		}
-		else
-		{
-			video::SColor bgcolor(255,128,128,128);
-			driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
-		}
+
 	}
 }
 
