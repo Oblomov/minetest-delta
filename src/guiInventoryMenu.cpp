@@ -41,7 +41,7 @@ void drawInventoryItem(video::IVideoDriver *driver,
 		driver->draw2DImage(texture, rect,
 			core::rect<s32>(core::position2d<s32>(0,0),
 			core::dimension2di(texture->getOriginalSize())),
-			clip, colors, false);
+			clip, colors, true);
 	}
 	else
 	{
