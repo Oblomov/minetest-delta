@@ -337,11 +337,10 @@ void draw_hotbar(video::IVideoDriver *driver, gui::IGUIFont *font,
 							rect.LowerRightCorner + v2s32(1,1)*padding),
 					NULL);
 		}
-		else
-		{
-			video::SColor bgcolor2(128,0,0,0);
-			driver->draw2DRectangle(bgcolor2, rect, NULL);
-		}
+
+		video::SColor bgcolor2(128,0,0,0);
+		driver->draw2DRectangle(bgcolor2, rect, NULL);
+
 
 		if(item != NULL)
 		{
