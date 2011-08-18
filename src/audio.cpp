@@ -254,10 +254,12 @@ Audio::Audio() :
 }
 
 
+// check if audio is available, returning if not
+#define _CHECK_AVAIL if (!isAvailable()) return
+
 Audio::~Audio()
 {
-	if (!isAvailable())
-		return;
+	_CHECK_AVAIL;
 
 	shutdown();
 }
@@ -298,7 +300,6 @@ static const char *extensions[] = {
 
 std::string Audio::findSoundFile(const std::string &basename, u8 &fmt)
 {
-
 	std::string base(m_path + basename + ".");
 
 	fmt = LOADER_VORBIS;
@@ -317,8 +318,7 @@ std::string Audio::findSoundFile(const std::string &basename, u8 &fmt)
 
 AmbientSound *Audio::getAmbientSound(const std::string &basename)
 {
-	if (!isAvailable())
-		return NULL;
+	_CHECK_AVAIL NULL;
 
 	AmbientSoundMap::Node* cached = m_ambient_sound.find(basename);
 
@@ -344,8 +344,7 @@ AmbientSound *Audio::getAmbientSound(const std::string &basename)
 void Audio::setAmbient(const std::string &slotname,
 		const std::string &basename)
 {
-	if (!isAvailable())
-		return;
+	_CHECK_AVAIL;
 
 	if (m_ambient_slot.find(slotname))
 		((AmbientSound*)(m_ambient_slot[slotname]))->stop();
@@ -375,8 +374,7 @@ void Audio::setAmbient(const std::string &slotname,
 SoundSource *Audio::createSource(const std::string &sourcename,
 		const std::string &basename)
 {
-	if (!isAvailable())
-		return NULL;
+	_CHECK_AVAIL NULL;
 
 	SoundSourceMap::Node* present = m_sound_source.find(sourcename);
 
@@ -404,8 +402,7 @@ SoundSource *Audio::createSource(const std::string &sourcename,
 
 SoundSource *Audio::getSource(const std::string &sourcename)
 {
-	if (!isAvailable())
-		return NULL;
+	_CHECK_AVAIL NULL;
 
 	SoundSourceMap::Node* present = m_sound_source.find(sourcename);
 
@@ -418,6 +415,8 @@ SoundSource *Audio::getSource(const std::string &sourcename)
 
 void Audio::updateListener(const scene::ICameraSceneNode* cam)
 {
+	_CHECK_AVAIL;
+
 	v3f pos = cam->getPosition();
 	m_listener[0] = pos.X;
 	m_listener[1] = pos.Y;
@@ -442,8 +441,7 @@ void Audio::updateListener(const scene::ICameraSceneNode* cam)
 
 SoundBuffer* Audio::loadSound(const std::string &basename)
 {
-	if (!isAvailable())
-		return NULL;
+	_CHECK_AVAIL NULL;
 
 	u8 fmt;
 	std::string fname(findSoundFile(basename, fmt));
