@@ -241,7 +241,7 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s)
 		if(m_selected_item != NULL && m_selected_item->listname == s.listname
 				&& m_selected_item->i == i)
 		{
-			driver->draw2DRectangle(video::SColor(255,255,0,0),
+			driver->draw2DRectangle(video::SColor(128,255,0,0),
 					core::rect<s32>(rect.UpperLeftCorner - v2s32(2,2),
 							rect.LowerRightCorner + v2s32(2,2)),
 					&AbsoluteClippingRect);
