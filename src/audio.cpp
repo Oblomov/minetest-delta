@@ -158,9 +158,17 @@ SoundBuffer* SoundBuffer::loadOggFile(const std::string &fname)
 	Sound sources
 */
 
+// check if audio source is actually present
+// (presently, if its buf is non-zero)
+// see also define in audio.h
+#define _SOURCE_CHECK if (m_buffer == NULL) return
+
 SoundSource::SoundSource(const SoundBuffer *buf)
 {
 	m_buffer = buf;
+
+	_SOURCE_CHECK;
+
 	alGenSources(1, &sourceID);
 
 	alSourcei(sourceID, AL_BUFFER, buf->getBufferID());
@@ -176,6 +184,9 @@ SoundSource::SoundSource(const SoundBuffer *buf)
 SoundSource::SoundSource(const SoundSource &org)
 {
 	m_buffer = org.m_buffer;
+
+	_SOURCE_CHECK;
+
 	alGenSources(1, &sourceID);
 
 	alSourcei(sourceID, AL_BUFFER, m_buffer->getBufferID());
@@ -185,6 +196,8 @@ SoundSource::SoundSource(const SoundSource &org)
 	setPosition(org.getPosition());
 	alSource3f(sourceID, AL_VELOCITY, 0, 0, 0);
 }
+
+#undef _SOURCE_CHECK
 
 /*
 	Audio system
@@ -468,4 +481,6 @@ SoundBuffer* Audio::loadSound(const std::string &basename)
 
 	return NULL;
 }
+
+#undef _CHECK_AVAIL
 
