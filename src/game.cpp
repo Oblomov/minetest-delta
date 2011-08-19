@@ -802,6 +802,12 @@ void the_game(
 	// enter/exit water
 	Audio::system()->setPlayerSound("splash", "splash");
 
+	// other sound sources
+
+	// digging sound TODO customize depending on block type
+	SoundSource *digsnd(Audio::system()->createSource("dig", "dig"));
+	digsnd->loop();
+
 #endif
 
 	video::IVideoDriver* driver = device->getVideoDriver();
@@ -1822,6 +1828,9 @@ void the_game(
 			{
 				client.clearTempMod(nodepos);
 				dig_time = 0.0;
+#if USE_AUDIO
+				digsnd->shouldPlay(false);
+#endif
 			}
 			
 			if(nodig_delay_counter > 0.0)
@@ -1840,6 +1849,10 @@ void the_game(
 						client.clearTempMod(nodepos_old);
 						dig_time = 0.0;
 					}
+#if USE_AUDIO
+					// TODO change the sound depending on node content
+					digsnd->setPosition(intToFloat(nodepos, BS));
+#endif
 				}
 
 				if(input->getLeftClicked() ||
@@ -1900,6 +1913,10 @@ void the_game(
 						dig_index = CRACK_ANIMATION_LENGTH;
 					}
 
+#if USE_AUDIO
+					digsnd->shouldPlay(true);
+#endif
+
 					if(dig_index < CRACK_ANIMATION_LENGTH)
 					{
 						//TimeTaker timer("client.setTempMod");
@@ -1912,6 +1929,9 @@ void the_game(
 						client.groundAction(3, nodepos, neighbourpos, g_selected_item);
 						client.clearTempMod(nodepos);
 						client.removeNode(nodepos);
+#if USE_AUDIO
+						digsnd->shouldPlay(false);
+#endif
 
 						dig_time = 0;
 
