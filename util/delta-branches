@@ -3,5 +3,6 @@ oblomov	git://github.com/Oblomov/minetest.git sound
 oblomov	git://github.com/Oblomov/minetest.git liquid_fixes
 oblomov	git://github.com/Oblomov/minetest.git new_input
 oblomov	git://github.com/Oblomov/minetest.git me_cmd
+sapier	 git://github.com/sapier/minetest.git  item_transparency
 oblomov	git://github.com/Oblomov/minetest.git wield-torches-light
 oblomov	git://github.com/Oblomov/minetest.git const
