@@ -1597,8 +1597,23 @@ void ClientEnvironment::step(float dtime)
 				Move the lplayer.
 				This also does collision detection.
 			*/
+			v3s16 oldp = lplayer->getLightPosition();
 			lplayer->move(dtime_part, *m_map, position_max_increment,
 					&player_collisions);
+			v3s16 newp = lplayer->getLightPosition();
+			u8 light = lplayer->emittedLight();
+			if ( light > 0 && oldp != newp) {
+				ClientEnvEvent event;
+				event.type = CEE_DYNLIGHT_CHANGE;
+				event.dynamic_light.prev_X = oldp.X;
+				event.dynamic_light.prev_Y = oldp.Y;
+				event.dynamic_light.prev_Z = oldp.Z;
+				event.dynamic_light.curr_X = newp.X;
+				event.dynamic_light.curr_Y = newp.Y;
+				event.dynamic_light.curr_Z = newp.Z;
+				event.dynamic_light.intensity = light;
+				m_client_event_queue.push_back(event);
+			}
 		}
 	}
 	while(dtime_downcount > 0.001);
@@ -1678,11 +1693,26 @@ void ClientEnvironment::step(float dtime)
 		*/
 		if(player->isLocal() == false)
 		{
+			v3s16 oldp = player->getLightPosition();
 			// Move
 			player->move(dtime, *m_map, 100*BS);
+			v3s16 newp = player->getLightPosition();
+			u8 light = player->emittedLight();
+			if (light > 0 && oldp != newp) {
+				ClientEnvEvent event;
+				event.type = CEE_DYNLIGHT_CHANGE;
+				event.dynamic_light.prev_X = oldp.X;
+				event.dynamic_light.prev_Y = oldp.Y;
+				event.dynamic_light.prev_Z = oldp.Z;
+				event.dynamic_light.curr_X = newp.X;
+				event.dynamic_light.curr_Y = newp.Y;
+				event.dynamic_light.curr_Z = newp.Z;
+				event.dynamic_light.intensity = light;
+				m_client_event_queue.push_back(event);
+			}
 
 			// Update lighting on remote players on client
-			u8 light = LIGHT_MAX;
+			light = LIGHT_MAX;
 			try{
 				// Get node at head
 				v3s16 p = player->getLightPosition();

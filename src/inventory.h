@@ -107,6 +107,8 @@ public:
 	virtual float getCookTime(){return 3.0;}
 	// Result of cooking (can randomize)
 	virtual InventoryItem *createCookResult() const {return NULL;}
+	// Amount of light emitted
+	virtual u8 emittedLight() const { return 0; }
 	
 	// Eat, press, activate, whatever.
 	// Called when item is right-clicked when lying on ground.
@@ -180,10 +182,14 @@ public:
 	*/
 	bool isCookable() const;
 	InventoryItem *createCookResult() const;
+	u8 emittedLight() const
+	{
+		return content_features(m_content).light_source;
+	}
 	/*
 		Special methods
 	*/
-	content_t getMaterial()
+	content_t getMaterial() const
 	{
 		return m_content;
 	}

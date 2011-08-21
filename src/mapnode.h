@@ -477,6 +477,8 @@ struct MapNode
 		//u8 dir;
 	};
 
+	u8 m_extra_light;
+
 	MapNode(const MapNode & n)
 	{
 		*this = n;
@@ -489,6 +491,7 @@ struct MapNode
 		param2 = a_param2;
 		// Set after other params because this needs to override part of param2
 		setContent(content);
+		m_extra_light = 0;
 	}
 
 	bool operator==(const MapNode &other)
@@ -554,8 +557,12 @@ struct MapNode
 		}
 		if(light_source() > lightday)
 			lightday = light_source();
+		if(m_extra_light > lightday)
+			lightday = m_extra_light;
 		if(light_source() > lightnight)
 			lightnight = light_source();
+		if(m_extra_light > lightnight)
+			lightnight = m_extra_light;
 		return (lightday&0x0f) | ((lightnight<<4)&0xf0);
 	}
 
@@ -574,6 +581,8 @@ struct MapNode
 		}
 		if(light_source() > light)
 			light = light_source();
+		if(m_extra_light > light)
+			light = m_extra_light;
 		return light;
 	}
 	
@@ -621,6 +630,17 @@ struct MapNode
 		else
 			assert(0);
 	}
+
+	u8 getExtraLight() const
+	{
+		return m_extra_light;
+	}
+
+	void setExtraLight(u8 a_light)
+	{
+		m_extra_light = a_light;
+	}
+
 	
 	// In mapnode.cpp
 	/*
