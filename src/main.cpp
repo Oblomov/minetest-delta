@@ -434,6 +434,10 @@ Doing currently:
 
 #include "gettext.h"
 
+#if USE_AUDIO
+#include "audio.h"
+#endif
+
 // This makes textures
 ITextureSource *g_texturesource = NULL;
 
@@ -1330,6 +1334,14 @@ int main(int argc, char *argv[])
 	std::string playername = g_settings.get("name");
 
 	/*
+		Audio system initialization
+	*/
+
+#if USE_AUDIO
+	Audio::system()->init(porting::getDataPath("sounds/"));
+#endif
+
+	/*
 		Device initialization
 	*/
 
@@ -1472,6 +1484,12 @@ int main(int argc, char *argv[])
 	*/
 	while(device->run() && kill == false)
 	{
+#if USE_AUDIO
+		// clear environment noise in case we fell back to the main menu from a game
+		Audio::system()->setAmbient("envnoise", "");
+		// set the background music to the title music
+		Audio::system()->setAmbient("bgmusic", "titlemusic");
+#endif
 
 		// This is used for catching disconnects
 		try

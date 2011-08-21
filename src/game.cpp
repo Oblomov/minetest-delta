@@ -32,6 +32,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "farmesh.h"
 #include "mapblock.h"
 
+#if USE_AUDIO
+#include "audio.h"
+#endif
+
 /*
 	TODO: Move content-aware stuff to separate file by adding properties
 	      and virtual interfaces
@@ -769,6 +773,49 @@ void the_game(
     std::string configpath
 )
 {
+#if USE_AUDIO
+#if 1
+	// environmental noise
+	Audio::system()->setAmbient("envnoise", "ambient");
+	// background music
+	// TODO allow turning the music on/off
+	Audio::system()->setAmbient("bgmusic", "music");
+#else // TEST directional source
+	Audio::system()->setAmbient("bgmusic", "");
+	SoundSource *snd(Audio::system()->createSource("jungle", "jungle"));
+	snd->loop();
+	snd->play();
+#endif
+
+	// player sounds
+	// TODO customize depending on walked ground
+	// walk
+	Audio::system()->setPlayerSound("walk", "footstep");
+	// walking sound is always at feet position, which
+	// relative to camera/eyes/ears can be found is defined
+	// by the feet_eye_vector
+	SoundSource *snd(Audio::system()->playerSound("walk"));
+	snd->setPosition(-feet_eye_vector);
+	snd->setReferenceDistance(feet_eye_vector.getLength());
+	// jump
+	Audio::system()->setPlayerSound("jump", "jump");
+	// swim
+	Audio::system()->setPlayerSound("swim", "swim");
+	// enter/exit water
+	Audio::system()->setPlayerSound("splash", "splash");
+	// splash sound doesn't loop, the control on its play status
+	// is done separately
+	Audio::system()->playerSound("splash")->loop(false);
+
+
+	// other sound sources
+
+	// digging sound TODO customize depending on block type
+	SoundSource *digsnd(Audio::system()->createSource("dig", "dig"));
+	digsnd->loop();
+
+#endif
+
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 	
@@ -1464,6 +1511,10 @@ void the_game(
 		*/
 		
 		{
+#if USE_AUDIO
+			static bool was_in_water = false;
+#endif
+
 			/*bool a_up,
 			bool a_down,
 			bool a_left,
@@ -1485,8 +1536,35 @@ void the_game(
 				camera_yaw
 			);
 			client.setPlayerControl(control);
+
+#if USE_AUDIO
+			PlayerEnvStatus pes(client.getPlayerEnvStatus());
+
+			// only let the walk sound be heard if moving
+			// and touching ground
+			// TODO change walk sound depending on ground
+			Audio::system()->playerSound("walk")->shouldPlay(
+				pes.touching_ground && (
+					control.up || control.down ||
+					control.left || control.right));
+			// swim sound if moving in water
+			Audio::system()->playerSound("swim")->shouldPlay(
+				pes.in_water && (
+					control.up || control.down ||
+					control.left || control.right));
+			// jumping sound only when jumping and not in water
+			Audio::system()->playerSound("jump")->shouldPlay(
+				control.jump && !pes.in_water);
+			// splashing sound when oscillating in and out of water
+			if (was_in_water != pes.in_water) {
+				snd = Audio::system()->playerSound("splash");
+				if (!snd->isPlaying())
+					snd->play();
+				was_in_water = pes.in_water;
+			}
+#endif
 		}
-		
+
 		/*
 			Run server
 		*/
@@ -1605,6 +1683,10 @@ void the_game(
 		
 		//timer2.stop();
 		//TimeTaker //timer3("//timer3");
+
+#if USE_AUDIO
+		Audio::system()->updateListener(camera);
+#endif
 
 		/*
 			Calculate what block is the crosshair pointing to
@@ -1768,6 +1850,9 @@ void the_game(
 			{
 				client.clearTempMod(nodepos);
 				dig_time = 0.0;
+#if USE_AUDIO
+				digsnd->shouldPlay(false);
+#endif
 			}
 			
 			if(nodig_delay_counter > 0.0)
@@ -1786,6 +1871,10 @@ void the_game(
 						client.clearTempMod(nodepos_old);
 						dig_time = 0.0;
 					}
+#if USE_AUDIO
+					// TODO change the sound depending on node content
+					digsnd->setPosition(intToFloat(nodepos, BS));
+#endif
 				}
 
 				if(input->getLeftClicked() ||
@@ -1846,6 +1935,10 @@ void the_game(
 						dig_index = CRACK_ANIMATION_LENGTH;
 					}
 
+#if USE_AUDIO
+					digsnd->shouldPlay(true);
+#endif
+
 					if(dig_index < CRACK_ANIMATION_LENGTH)
 					{
 						//TimeTaker timer("client.setTempMod");
@@ -1858,6 +1951,9 @@ void the_game(
 						client.groundAction(3, nodepos, neighbourpos, g_selected_item);
 						client.clearTempMod(nodepos);
 						client.removeNode(nodepos);
+#if USE_AUDIO
+						digsnd->shouldPlay(false);
+#endif
 
 						dig_time = 0;
 

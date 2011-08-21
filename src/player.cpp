@@ -23,6 +23,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "constants.h"
 #include "utility.h"
 
+/* distance between feet position and light position */
+const v3f feet_light_vector(0, BS+BS/2, 0);
+/* distance between feet position and eye position */
+const v3f feet_eye_vector(0, BS+(5*BS)/8, 0);
 
 Player::Player():
 	touching_ground(false),

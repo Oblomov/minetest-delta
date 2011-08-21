@@ -31,6 +31,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 class Map;
 
+/* distance between feet position and light position */
+extern const v3f feet_light_vector;
+/* distance between feet position and eye position */
+extern const v3f feet_eye_vector;
+
 class Player
 {
 public:
@@ -64,7 +69,7 @@ public:
 
 	v3s16 getLightPosition() const
 	{
-		return floatToInt(m_position + v3f(0,BS+BS/2,0), BS);
+		return floatToInt(m_position + feet_light_vector, BS);
 	}
 
 	v3f getEyePosition()
@@ -72,7 +77,7 @@ public:
 		// This is at the height of the eyes of the current figure
 		// return m_position + v3f(0, BS+BS/2, 0);
 		// This is more like in minecraft
-		return m_position + v3f(0,BS+(5*BS)/8,0);
+		return m_position + feet_eye_vector;
 	}
 
 	virtual void setPosition(const v3f &position)
