@@ -51,15 +51,16 @@ public:
 	// Shall write the name and the parameters
 	virtual void serialize(std::ostream &os) const = 0;
 	// Shall make an exact clone of the item
-	virtual InventoryItem* clone() = 0;
+	virtual InventoryItem* clone() const = 0;
 #ifndef SERVER
 	// Shall return an image to show in the GUI (or NULL)
-	virtual video::ITexture * getImage() { return NULL; }
+	virtual video::ITexture * getImage() const { return NULL; }
 #endif
 	// Shall return a text to show in the GUI
-	virtual std::string getText() { return ""; }
+	virtual std::string getText() const { return ""; }
 	// Creates an object from the item, to be placed in the world.
-	virtual ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, v3f pos);
+	virtual ServerActiveObject* createSAO(ServerEnvironment *env, u16 id,
+			const v3f &pos) const;
 	// Gets amount of items that dropping one SAO will decrement
 	virtual u16 getDropCount() const { return getCount(); }
 
@@ -104,7 +105,7 @@ public:
 	// Whether it can be cooked
 	virtual bool isCookable() const {return false;}
 	// Time of cooking
-	virtual float getCookTime(){return 3.0;}
+	virtual float getCookTime() const {return 3.0;}
 	// Result of cooking (can randomize)
 	virtual InventoryItem *createCookResult() const {return NULL;}
 	// Amount of light emitted
@@ -144,18 +145,18 @@ public:
 		os<<" ";
 		os<<m_count;
 	}
-	virtual InventoryItem* clone()
+	virtual InventoryItem* clone() const
 	{
 		return new MaterialItem(m_content, m_count);
 	}
 #ifndef SERVER
-	video::ITexture * getImage()
+	video::ITexture * getImage() const
 	{
 		return content_features(m_content).inventory_texture;
 		return NULL;
 	}
 #endif
-	std::string getText()
+	std::string getText() const
 	{
 		std::ostringstream os;
 		os<<m_count;
@@ -201,7 +202,7 @@ private:
 class MapBlockObjectItem : public InventoryItem
 {
 public:
-	MapBlockObjectItem(std::string inventorystring):
+	MapBlockObjectItem(const std::string &inventorystring):
 		InventoryItem(1)
 	{
 		m_inventorystring = inventorystring;
@@ -223,25 +224,26 @@ public:
 		os<<sane_string;
 		os<<"|";
 	}
-	virtual InventoryItem* clone()
+	virtual InventoryItem* clone() const
 	{
 		return new MapBlockObjectItem(m_inventorystring);
 	}
 
 #ifndef SERVER
-	video::ITexture * getImage();
+	video::ITexture * getImage() const;
 #endif
-	std::string getText();
+	std::string getText() const;
 
 	/*
 		Special methods
 	*/
-	std::string getInventoryString()
+	std::string getInventoryString() const
 	{
 		return m_inventorystring;
 	}
 
-	MapBlockObject * createObject(v3f pos, f32 player_yaw, f32 player_pitch);
+	MapBlockObject * createObject(const v3f &pos, f32 player_yaw,
+			f32 player_pitch) const;
 
 private:
 	std::string m_inventorystring;
@@ -255,7 +257,7 @@ private:
 class CraftItem : public InventoryItem
 {
 public:
-	CraftItem(std::string subname, u16 count):
+	CraftItem(const std::string &subname, u16 count):
 		InventoryItem(count)
 	{
 		m_subname = subname;
@@ -275,21 +277,22 @@ public:
 		os<<" ";
 		os<<m_count;
 	}
-	virtual InventoryItem* clone()
+	virtual InventoryItem* clone() const
 	{
 		return new CraftItem(m_subname, m_count);
 	}
 #ifndef SERVER
-	video::ITexture * getImage();
+	video::ITexture * getImage() const;
 #endif
-	std::string getText()
+	std::string getText() const
 	{
 		std::ostringstream os;
 		os<<m_count;
 		return os.str();
 	}
 
-	ServerActiveObject* createSAO(ServerEnvironment *env, u16 id, v3f pos);
+	ServerActiveObject* createSAO(ServerEnvironment *env, u16 id,
+			const v3f &pos) const;
 	u16 getDropCount() const;
 
 	virtual bool addableTo(const InventoryItem *other) const
@@ -320,7 +323,7 @@ public:
 	/*
 		Special methods
 	*/
-	std::string getSubName()
+	const std::string &getSubName() const
 	{
 		return m_subname;
 	}
@@ -331,7 +334,7 @@ private:
 class ToolItem : public InventoryItem
 {
 public:
-	ToolItem(std::string toolname, u16 wear):
+	ToolItem(const std::string &toolname, u16 wear):
 		InventoryItem(1)
 	{
 		m_toolname = toolname;
@@ -352,12 +355,12 @@ public:
 		os<<" ";
 		os<<m_wear;
 	}
-	virtual InventoryItem* clone()
+	virtual InventoryItem* clone() const
 	{
 		return new ToolItem(m_toolname, m_wear);
 	}
 #ifndef SERVER
-	video::ITexture * getImage()
+	video::ITexture * getImage() const
 	{
 		if(g_texturesource == NULL)
 			return NULL;
@@ -406,7 +409,7 @@ public:
 		return g_texturesource->getTextureRaw(os.str());
 	}
 #endif
-	std::string getText()
+	std::string getText() const
 	{
 		return "";
 		
@@ -429,11 +432,11 @@ public:
 	/*
 		Special methods
 	*/
-	std::string getToolName()
+	const std::string &getToolName() const
 	{
 		return m_toolname;
 	}
-	u16 getWear()
+	u16 getWear() const
 	{
 		return m_wear;
 	}
@@ -459,7 +462,7 @@ private:
 class InventoryList
 {
 public:
-	InventoryList(std::string name, u32 size);
+	InventoryList(const std::string &name, u32 size);
 	~InventoryList();
 	void clearItems();
 	void serialize(std::ostream &os) const;
@@ -469,10 +472,10 @@ public:
 	InventoryList & operator = (const InventoryList &other);
 
 	const std::string &getName() const;
-	u32 getSize();
+	u32 getSize() const;
 	// Count used slots
-	u32 getUsedSlots();
-	u32 getFreeSlots();
+	u32 getUsedSlots() const;
+	u32 getFreeSlots() const;
 
 	/*bool getDirty(){ return m_dirty; }
 	void setDirty(bool dirty=true){ m_dirty = dirty; }*/
@@ -496,7 +499,7 @@ public:
 	InventoryItem * addItem(u32 i, InventoryItem *newitem);
 
 	// Checks whether the item could be added to the given slot
-	bool itemFits(u32 i, InventoryItem *newitem);
+	bool itemFits(u32 i, const InventoryItem *newitem) const;
 
 	// Takes some items from a slot.
 	// If there are not enough, takes as many as it can.
@@ -506,7 +509,7 @@ public:
 	// Decrements amount of every material item
 	void decrementMaterials(u16 count);
 
-	void print(std::ostream &o);
+	void print(std::ostream &o) const;
 	
 private:
 	core::array<InventoryItem*> m_items;
@@ -575,10 +578,15 @@ public:
 		- "current_player"
 		- "nodemeta:X,Y,Z"
 	*/
-	virtual Inventory* getInventory(InventoryContext *c, std::string id)
+	virtual const Inventory* getInventory(InventoryContext *c,
+			const std::string &id) const
+		{return NULL;}
+	virtual Inventory* getInventory(InventoryContext *c,
+			const std::string &id)
 		{return NULL;}
 	// Used on the server by InventoryAction::apply and other stuff
-	virtual void inventoryModified(InventoryContext *c, std::string id)
+	virtual void inventoryModified(InventoryContext *c,
+			const std::string &id)
 		{}
 	// Used on the client
 	virtual void inventoryAction(InventoryAction *a)
@@ -679,7 +687,7 @@ struct ItemSpec
 		type(ITEM_NONE)
 	{
 	}
-	ItemSpec(enum ItemSpecType a_type, std::string a_name):
+	ItemSpec(enum ItemSpecType a_type, const std::string &a_name):
 		type(a_type),
 		name(a_name),
 		num(65535)

@@ -73,7 +73,7 @@ inline void writeU8(u8 *data, u8 i)
 	data[0] = ((i>> 0)&0xff);
 }
 
-inline u64 readU64(u8 *data)
+inline u64 readU64(const u8 *data)
 {
 	return ((u64)data[0]<<56) | ((u64)data[1]<<48)
 		| ((u64)data[2]<<40) | ((u64)data[3]<<32)
@@ -81,17 +81,17 @@ inline u64 readU64(u8 *data)
 		| ((u64)data[6]<<8) | ((u64)data[7]<<0);
 }
 
-inline u32 readU32(u8 *data)
+inline u32 readU32(const u8 *data)
 {
 	return (data[0]<<24) | (data[1]<<16) | (data[2]<<8) | (data[3]<<0);
 }
 
-inline u16 readU16(u8 *data)
+inline u16 readU16(const u8 *data)
 {
 	return (data[0]<<8) | (data[1]<<0);
 }
 
-inline u8 readU8(u8 *data)
+inline u8 readU8(const u8 *data)
 {
 	return (data[0]<<0);
 }
@@ -99,21 +99,21 @@ inline u8 readU8(u8 *data)
 inline void writeS32(u8 *data, s32 i){
 	writeU32(data, (u32)i);
 }
-inline s32 readS32(u8 *data){
+inline s32 readS32(const u8 *data){
 	return (s32)readU32(data);
 }
 
 inline void writeF1000(u8 *data, f32 i){
 	writeS32(data, i*1000);
 }
-inline f32 readF1000(u8 *data){
+inline f32 readF1000(const u8 *data){
 	return (f32)readS32(data)/1000.;
 }
 
 inline void writeS16(u8 *data, s16 i){
 	writeU16(data, (u16)i);
 }
-inline s16 readS16(u8 *data){
+inline s16 readS16(const u8 *data){
 	return (s16)readU16(data);
 }
 
@@ -123,7 +123,7 @@ inline void writeV3S32(u8 *data, v3s32 p)
 	writeS32(&data[4], p.Y);
 	writeS32(&data[8], p.Z);
 }
-inline v3s32 readV3S32(u8 *data)
+inline v3s32 readV3S32(const u8 *data)
 {
 	v3s32 p;
 	p.X = readS32(&data[0]);
@@ -138,7 +138,7 @@ inline void writeV3F1000(u8 *data, v3f p)
 	writeF1000(&data[4], p.Y);
 	writeF1000(&data[8], p.Z);
 }
-inline v3f readV3F1000(u8 *data)
+inline v3f readV3F1000(const u8 *data)
 {
 	v3f p;
 	p.X = (float)readF1000(&data[0]);
@@ -153,7 +153,7 @@ inline void writeV2S16(u8 *data, v2s16 p)
 	writeS16(&data[2], p.Y);
 }
 
-inline v2s16 readV2S16(u8 *data)
+inline v2s16 readV2S16(const u8 *data)
 {
 	v2s16 p;
 	p.X = readS16(&data[0]);
@@ -167,7 +167,7 @@ inline void writeV2S32(u8 *data, v2s32 p)
 	writeS32(&data[2], p.Y);
 }
 
-inline v2s32 readV2S32(u8 *data)
+inline v2s32 readV2S32(const u8 *data)
 {
 	v2s32 p;
 	p.X = readS32(&data[0]);
@@ -182,7 +182,7 @@ inline void writeV3S16(u8 *data, v3s16 p)
 	writeS16(&data[4], p.Z);
 }
 
-inline v3s16 readV3S16(u8 *data)
+inline v3s16 readV3S16(const u8 *data)
 {
 	v3s16 p;
 	p.X = readS16(&data[0]);
@@ -366,11 +366,19 @@ public:
 	{
 		delete[] data;
 	}
-	T & operator[](unsigned int i) const
+	const T & operator[](unsigned int i) const
 	{
 		return data[i];
 	}
-	T * operator*() const
+	T & operator[](unsigned int i)
+	{
+		return data[i];
+	}
+	const T * operator*() const
+	{
+		return data;
+	}
+	T * operator*()
 	{
 		return data;
 	}
@@ -460,12 +468,21 @@ public:
 	{
 		drop();
 	}
-	T & operator[](unsigned int i) const
+	const T & operator[](unsigned int i) const
 	{
 		//assert(i < m_size)
 		return data[i];
 	}
-	T * operator*() const
+	T & operator[](unsigned int i)
+	{
+		//assert(i < m_size)
+		return data[i];
+	}
+	const T * operator*() const
+	{
+		return data;
+	}
+	T * operator*()
 	{
 		return data;
 	}
@@ -506,7 +523,7 @@ public:
 		m_mutex.Init();
 	}
 
-	T get()
+	T get() const
 	{
 		JMutexAutoLock lock(m_mutex);
 		return m_value;
@@ -528,7 +545,7 @@ public:
 	T m_value;
 
 private:
-	JMutex m_mutex;
+	mutable JMutex m_mutex;
 };
 
 /*
@@ -547,7 +564,7 @@ public:
 
 	u32 stop(bool quiet=false);
 
-	u32 getTime();
+	u32 getTime() const;
 
 private:
 	const char *m_name;
@@ -659,7 +676,7 @@ inline s16 getContainerPos(s16 p, s16 d)
 	return (p>=0 ? p : p-d+1) / d;
 }
 
-inline v2s16 getContainerPos(v2s16 p, s16 d)
+inline v2s16 getContainerPos(const v2s16 &p, s16 d)
 {
 	return v2s16(
 		getContainerPos(p.X, d),
@@ -667,7 +684,7 @@ inline v2s16 getContainerPos(v2s16 p, s16 d)
 	);
 }
 
-inline v3s16 getContainerPos(v3s16 p, s16 d)
+inline v3s16 getContainerPos(const v3s16 &p, s16 d)
 {
 	return v3s16(
 		getContainerPos(p.X, d),
@@ -676,7 +693,7 @@ inline v3s16 getContainerPos(v3s16 p, s16 d)
 	);
 }
 
-inline v2s16 getContainerPos(v2s16 p, v2s16 d)
+inline v2s16 getContainerPos(const v2s16 &p, const v2s16 &d)
 {
 	return v2s16(
 		getContainerPos(p.X, d.X),
@@ -684,7 +701,7 @@ inline v2s16 getContainerPos(v2s16 p, v2s16 d)
 	);
 }
 
-inline v3s16 getContainerPos(v3s16 p, v3s16 d)
+inline v3s16 getContainerPos(const v3s16 &p, const v3s16 &d)
 {
 	return v3s16(
 		getContainerPos(p.X, d.X),
@@ -693,7 +710,7 @@ inline v3s16 getContainerPos(v3s16 p, v3s16 d)
 	);
 }
 
-inline bool isInArea(v3s16 p, s16 d)
+inline bool isInArea(const v3s16 &p, s16 d)
 {
 	return (
 		p.X >= 0 && p.X < d &&
@@ -702,7 +719,7 @@ inline bool isInArea(v3s16 p, s16 d)
 	);
 }
 
-inline bool isInArea(v2s16 p, s16 d)
+inline bool isInArea(const v2s16 &p, s16 d)
 {
 	return (
 		p.X >= 0 && p.X < d &&
@@ -710,7 +727,7 @@ inline bool isInArea(v2s16 p, s16 d)
 	);
 }
 
-inline bool isInArea(v3s16 p, v3s16 d)
+inline bool isInArea(const v3s16 &p, const v3s16 &d)
 {
 	return (
 		p.X >= 0 && p.X < d.X &&
@@ -842,17 +859,17 @@ inline s32 stoi(const std::string &s, s32 min, s32 max)
 // MSVC2010 includes it's own versions of these
 #if !defined(_MSC_VER) || _MSC_VER < 1600
 
-inline s32 stoi(std::string s)
+inline s32 stoi(const std::string &s)
 {
 	return atoi(s.c_str());
 }
 
-inline s32 stoi(std::wstring s)
+inline s32 stoi(const std::wstring &s)
 {
 	return atoi(wide_to_narrow(s).c_str());
 }
 
-inline float stof(std::string s)
+inline float stof(const std::string &s)
 {
 	float f;
 	std::istringstream ss(s);
@@ -903,7 +920,7 @@ inline void str_replace_char(std::string & str, char from, char to)
 class SimpleThread : public JThread
 {
 	bool run;
-	JMutex run_mutex;
+	mutable JMutex run_mutex;
 
 public:
 
@@ -919,7 +936,7 @@ public:
 
 	virtual void * Thread() = 0;
 
-	bool getRun()
+	bool getRun() const
 	{
 		JMutexAutoLock lock(run_mutex);
 		return run;

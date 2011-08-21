@@ -70,7 +70,8 @@ MeshUpdateQueue::~MeshUpdateQueue()
 /*
 	peer_id=0 adds with nobody to send to
 */
-void MeshUpdateQueue::addBlock(v3s16 p, MeshMakeData *data, bool ack_block_to_server)
+void MeshUpdateQueue::addBlock(const v3s16 &p, MeshMakeData *data,
+		bool ack_block_to_server)
 {
 	DSTACK(__FUNCTION_NAME);
 
@@ -239,7 +240,7 @@ Client::~Client()
 		sleep_ms(100);
 }
 
-void Client::connect(Address address)
+void Client::connect(const Address &address)
 {
 	DSTACK(__FUNCTION_NAME);
 	//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
@@ -247,7 +248,7 @@ void Client::connect(Address address)
 	m_con.Connect(address);
 }
 
-bool Client::connectedAndInitialized()
+bool Client::connectedAndInitialized() const
 {
 	//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 
@@ -1632,14 +1633,14 @@ void Client::ProcessData(u8 *data, u32 datasize, u16 sender_peer_id)
 	}
 }
 
-void Client::Send(u16 channelnum, SharedBuffer<u8> data, bool reliable)
+void Client::Send(u16 channelnum, const SharedBuffer<u8> &data, bool reliable) const
 {
 	//JMutexAutoLock lock(m_con_mutex); //bulk comment-out
 	m_con.Send(PEER_ID_SERVER, channelnum, data, reliable);
 }
 
-void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
-		v3s16 nodepos_oversurface, u16 item)
+void Client::groundAction(u8 action, const v3s16 &nodepos_undersurface,
+		const v3s16 &nodepos_oversurface, u16 item) const
 {
 	if(connectedAndInitialized() == false){
 		dout_client<<DTIME<<"Client::groundAction() "
@@ -1671,7 +1672,7 @@ void Client::groundAction(u8 action, v3s16 nodepos_undersurface,
 	Send(0, data, true);
 }
 
-void Client::clickObject(u8 button, v3s16 blockpos, s16 id, u16 item)
+void Client::clickObject(u8 button, const v3s16 &blockpos, s16 id, u16 item) const
 {
 	if(connectedAndInitialized() == false){
 		dout_client<<DTIME<<"Client::clickObject() "
@@ -1697,7 +1698,7 @@ void Client::clickObject(u8 button, v3s16 blockpos, s16 id, u16 item)
 	Send(0, data, true);
 }
 
-void Client::clickActiveObject(u8 button, u16 id, u16 item)
+void Client::clickActiveObject(u8 button, u16 id, u16 item) const
 {
 	if(connectedAndInitialized() == false){
 		dout_client<<DTIME<<"Client::clickActiveObject() "
@@ -1722,7 +1723,8 @@ void Client::clickActiveObject(u8 button, u16 id, u16 item)
 	Send(0, data, true);
 }
 
-void Client::sendSignText(v3s16 blockpos, s16 id, std::string text)
+void Client::sendSignText(const v3s16 &blockpos, s16 id,
+		const std::string &text) const
 {
 	/*
 		u16 command
@@ -1761,7 +1763,7 @@ void Client::sendSignText(v3s16 blockpos, s16 id, std::string text)
 	Send(0, data, true);
 }
 	
-void Client::sendSignNodeText(v3s16 p, std::string text)
+void Client::sendSignNodeText(const v3s16 &p, const std::string &text) const
 {
 	/*
 		u16 command
@@ -1795,7 +1797,7 @@ void Client::sendSignNodeText(v3s16 p, std::string text)
 	Send(0, data, true);
 }
 	
-void Client::sendInventoryAction(InventoryAction *a)
+void Client::sendInventoryAction(const InventoryAction *a) const
 {
 	std::ostringstream os(std::ios_base::binary);
 	u8 buf[12];
@@ -1813,7 +1815,7 @@ void Client::sendInventoryAction(InventoryAction *a)
 	Send(0, data, true);
 }
 
-void Client::sendChatMessage(const std::wstring &message)
+void Client::sendChatMessage(const std::wstring &message) const
 {
 	std::ostringstream os(std::ios_base::binary);
 	u8 buf[12];
@@ -1841,8 +1843,8 @@ void Client::sendChatMessage(const std::wstring &message)
 	Send(0, data, true);
 }
 
-void Client::sendChangePassword(const std::wstring oldpassword,
-		const std::wstring newpassword)
+void Client::sendChangePassword(const std::wstring &oldpassword,
+		const std::wstring &newpassword) const
 {
 	Player *player = m_env.getLocalPlayer();
 	if(player == NULL)
@@ -1878,7 +1880,7 @@ void Client::sendChangePassword(const std::wstring oldpassword,
 }
 
 
-void Client::sendDamage(u8 damage)
+void Client::sendDamage(u8 damage) const
 {
 	DSTACK(__FUNCTION_NAME);
 	std::ostringstream os(std::ios_base::binary);
@@ -1893,7 +1895,7 @@ void Client::sendDamage(u8 damage)
 	Send(0, data, true);
 }
 
-void Client::sendPlayerPos()
+void Client::sendPlayerPos() const
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	
@@ -1940,7 +1942,7 @@ void Client::sendPlayerPos()
 	Send(0, data, false);
 }
 
-void Client::sendPlayerItem(u16 item)
+void Client::sendPlayerItem(u16 item) const
 {
 	Player *myplayer = m_env.getLocalPlayer();
 	if(myplayer == NULL)
@@ -1962,7 +1964,7 @@ void Client::sendPlayerItem(u16 item)
 	Send(0, data, true);
 }
 
-void Client::removeNode(v3s16 p)
+void Client::removeNode(const v3s16 &p)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	
@@ -1987,7 +1989,7 @@ void Client::removeNode(v3s16 p)
 	}
 }
 
-void Client::addNode(v3s16 p, MapNode n)
+void Client::addNode(const v3s16 &p, const MapNode &n)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 
@@ -2074,25 +2076,30 @@ void Client::moveDynLight(const v3s16 &oldp, const v3s16 &newp, u8 intensity)
 	}
 }
 
-void Client::updateCamera(v3f pos, v3f dir)
+void Client::updateCamera(const v3f &pos, const v3f &dir)
 {
 	m_env.getClientMap().updateCamera(pos, dir);
 	camera_position = pos;
 	camera_direction = dir;
 }
 
-MapNode Client::getNode(v3s16 p)
+const MapNode &Client::getNode(const v3s16 &p) const
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	return m_env.getMap().getNode(p);
 }
 
-NodeMetadata* Client::getNodeMetadata(v3s16 p)
+const NodeMetadata* Client::getNodeMetadata(const v3s16 &p) const
 {
 	return m_env.getMap().getNodeMetadata(p);
 }
 
-v3f Client::getPlayerPosition(v3f *eye_position)
+NodeMetadata* Client::getNodeMetadata(const v3s16 &p)
+{
+	return m_env.getMap().getNodeMetadata(p);
+}
+
+const v3f & Client::getPlayerPosition(v3f *eye_position) const
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	LocalPlayer *player = m_env.getLocalPlayer();
@@ -2117,7 +2124,7 @@ PlayerEnvStatus Client::getPlayerEnvStatus()
 	return status;
 }
 
-void Client::setPlayerControl(PlayerControl &control)
+void Client::setPlayerControl(const PlayerControl &control)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	LocalPlayer *player = m_env.getLocalPlayer();
@@ -2159,12 +2166,46 @@ void Client::getLocalInventory(Inventory &dst)
 	dst = player->inventory;
 }
 
+const InventoryContext *Client::getInventoryContext() const
+{
+	return &m_inventory_context;
+}
+
 InventoryContext *Client::getInventoryContext()
 {
 	return &m_inventory_context;
 }
 
-Inventory* Client::getInventory(InventoryContext *c, std::string id)
+const Inventory* Client::getInventory(InventoryContext *c, const std::string &id) const
+{
+	if(id == "current_player")
+	{
+		assert(c->current_player);
+		return &(c->current_player->inventory);
+	}
+	
+	Strfnd fn(id);
+	std::string id0 = fn.next(":");
+
+	if(id0 == "nodemeta")
+	{
+		v3s16 p;
+		p.X = stoi(fn.next(","));
+		p.Y = stoi(fn.next(","));
+		p.Z = stoi(fn.next(","));
+		const NodeMetadata* meta = getNodeMetadata(p);
+		if(meta)
+			return meta->getInventory();
+		dstream<<"nodemeta at ("<<p.X<<","<<p.Y<<","<<p.Z<<"): "
+				<<"no metadata found"<<std::endl;
+		return NULL;
+	}
+
+	dstream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
+	return NULL;
+}
+
+Inventory* Client::getInventory(InventoryContext *c, const std::string &id)
 {
 	if(id == "current_player")
 	{
@@ -2192,6 +2233,7 @@ Inventory* Client::getInventory(InventoryContext *c, std::string id)
 	dstream<<__FUNCTION_NAME<<": unknown id "<<id<<std::endl;
 	return NULL;
 }
+
 void Client::inventoryAction(InventoryAction *a)
 {
 	sendInventoryAction(a);
@@ -2199,16 +2241,16 @@ void Client::inventoryAction(InventoryAction *a)
 
 MapBlockObject * Client::getSelectedObject(
 		f32 max_d,
-		v3f from_pos_f_on_map,
+		const v3f &from_pos_f_on_map,
 		core::line3d<f32> shootline_on_map
-	)
+	) const
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 
 	core::array<DistanceSortedObject> objects;
 
-	for(core::map<v3s16, bool>::Iterator
-			i = m_active_blocks.getIterator();
+	for(core::map<v3s16, bool>::ConstIterator
+			i = m_active_blocks.getConstIterator();
 			i.atEnd() == false; i++)
 	{
 		v3s16 p = i.getNode()->getKey();
@@ -2264,7 +2306,7 @@ MapBlockObject * Client::getSelectedObject(
 
 ClientActiveObject * Client::getSelectedActiveObject(
 		f32 max_d,
-		v3f from_pos_f_on_map,
+		const v3f &from_pos_f_on_map,
 		core::line3d<f32> shootline_on_map
 	)
 {
@@ -2282,7 +2324,7 @@ ClientActiveObject * Client::getSelectedActiveObject(
 	{
 		ClientActiveObject *obj = objects[i].obj;
 		
-		core::aabbox3d<f32> *selection_box = obj->getSelectionBox();
+		const core::aabbox3d<f32> *selection_box = obj->getSelectionBox();
 		if(selection_box == NULL)
 			continue;
 
@@ -2304,7 +2346,7 @@ ClientActiveObject * Client::getSelectedActiveObject(
 	return NULL;
 }
 
-void Client::printDebugInfo(std::ostream &os)
+void Client::printDebugInfo(std::ostream &os) const
 {
 	//JMutexAutoLock lock1(m_fetchblock_mutex);
 	/*JMutexAutoLock lock2(m_incoming_queue_mutex);
@@ -2315,20 +2357,20 @@ void Client::printDebugInfo(std::ostream &os)
 		<<std::endl;*/
 }
 	
-u32 Client::getDayNightRatio()
+u32 Client::getDayNightRatio() const
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	return m_env.getDayNightRatio();
 }
 
-u16 Client::getHP()
+u16 Client::getHP() const
 {
-	Player *player = m_env.getLocalPlayer();
+	const Player *player = m_env.getLocalPlayer();
 	assert(player != NULL);
 	return player->hp;
 }
 
-void Client::setTempMod(v3s16 p, NodeMod mod)
+void Client::setTempMod(const v3s16 &p, const NodeMod &mod)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
@@ -2345,7 +2387,7 @@ void Client::setTempMod(v3s16 p, NodeMod mod)
 	}
 }
 
-void Client::clearTempMod(v3s16 p)
+void Client::clearTempMod(const v3s16 &p)
 {
 	//JMutexAutoLock envlock(m_env_mutex); //bulk comment-out
 	assert(m_env.getMap().mapType() == MAPTYPE_CLIENT);
@@ -2362,7 +2404,7 @@ void Client::clearTempMod(v3s16 p)
 	}
 }
 
-void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
+void Client::addUpdateMeshTask(const v3s16 &p, bool ack_to_server)
 {
 	/*dstream<<"Client::addUpdateMeshTask(): "
 			<<"("<<p.X<<","<<p.Y<<","<<p.Z<<")"
@@ -2414,7 +2456,7 @@ void Client::addUpdateMeshTask(v3s16 p, bool ack_to_server)
 	b->setMeshExpired(false);
 }
 
-void Client::addUpdateMeshTaskWithEdge(v3s16 blockpos, bool ack_to_server)
+void Client::addUpdateMeshTaskWithEdge(const v3s16 &blockpos, bool ack_to_server)
 {
 	/*{
 		v3s16 p = blockpos;
