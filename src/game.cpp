@@ -2412,6 +2412,13 @@ void the_game(
 		guienv->drawAll();
 
 		/*
+			Environment post fx
+		*/
+		{
+			client.getEnv()->drawPostFx(driver, camera_position);
+		}
+		
+		/*
 			Draw hotbar
 		*/
 		{
@@ -2433,13 +2440,6 @@ void the_game(
 					NULL);
 		}
 
-		/*
-			Environment post fx
-		*/
-		{
-			client.getEnv()->drawPostFx(driver, camera_position);
-		}
-		
 		/*
 			End scene
 		*/
