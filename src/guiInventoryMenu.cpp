@@ -41,7 +41,7 @@ void drawInventoryItem(video::IVideoDriver *driver,
 		driver->draw2DImage(texture, rect,
 			core::rect<s32>(core::position2d<s32>(0,0),
 			core::dimension2di(texture->getOriginalSize())),
-			clip, colors, false);
+			clip, colors, true);
 	}
 	else
 	{
@@ -241,22 +241,21 @@ void GUIInventoryMenu::drawList(const ListDrawSpec &s)
 		if(m_selected_item != NULL && m_selected_item->listname == s.listname
 				&& m_selected_item->i == i)
 		{
-			driver->draw2DRectangle(video::SColor(255,255,0,0),
+			driver->draw2DRectangle(video::SColor(128,255,0,0),
 					core::rect<s32>(rect.UpperLeftCorner - v2s32(2,2),
 							rect.LowerRightCorner + v2s32(2,2)),
 					&AbsoluteClippingRect);
 		}
+
+		video::SColor bgcolor(255,128,128,128);
+		driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
 
 		if(item)
 		{
 			drawInventoryItem(driver, font, item,
 					rect, &AbsoluteClippingRect);
 		}
-		else
-		{
-			video::SColor bgcolor(255,128,128,128);
-			driver->draw2DRectangle(bgcolor, rect, &AbsoluteClippingRect);
-		}
+
 	}
 }
 
